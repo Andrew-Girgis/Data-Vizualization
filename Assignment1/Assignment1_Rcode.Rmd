@@ -71,8 +71,87 @@ Make a function called `tierlist` and fill in the following template.
 
 ```{r}
 plot.new()
-plot.window(xlim=c(-200,200), ylim=c(-150,150))
-rect(-100, -100, 100, 100, col = "black", border = "red", lty = 2, lwd = 10)
+x_left = 0
+X_right = 10
+y_bottom = 0
+y_top = 10
+plot.window(xlim=c(x_left,X_right), ylim=c(y_bottom, y_top))
+
+
+tiernames=c("S","A","B","C","D","F")
+
+Ntiers = length(tiernames)
+
+tiercols = c("lightblue","green", "lightgreen", "yellow", "orange", "red")
+
+tier_start_y = y_top * 0.9
+# take 10% off the top for the title
+
+tier_start_x = ((X_right-x_left) * 0.1 + x_left)
+# Starts 10% to the right to leave space for the tier label
+
+space = (tier_start_y-y_bottom)/Ntiers
+# Divide the space into equal parts of the window
+
+tier_height = (space) * 0.9
+# height of the tiers minus 10% for the gaps
+
+rect(x_left, y_bottom, X_right, y_top, col = "black")
+text((X_right+x_left)/2, y_top * 0.95, labels = "Tierlist", col = "white")
+
+title = "Ice Cream Tier List"
+tier = c("S","S","A","A","B","B","B","C","D","F")
+text = c("Dolce de Leche", "Strawberry",
+         "Vanilla", "Mint", 
+         "Chocolate", "Spumoni", "Sherbet",
+         "Rocky Road", "Butter Rum", "Raisin")
+
+df = data.frame(tier, text)
+
+tier_counts <- table(df$tier)
+
+
+for (i in 1:Ntiers)
+{
+  this_df = subset(df, tier == tiernames[i])
+  Nboxes = nrow(this_df)
+  if (i>1)
+  {
+  tier_start_y = tier_start_y - (space)
+  rect(tier_start_x, tier_start_y - tier_height, X_right * 0.95, tier_start_y, col = tiercols[i])
+  text((x_left + tier_start_x)/2, ((tier_start_y - tier_height) + tier_start_y)/2, tiernames[i], col = tiercols[i] )
+    for (j in 1:Nboxes)
+    {
+      cent = (((X_right * 0.95) - tier_start_x) / (Nboxes + 1))
+      x_pos = tier_start_x + cent * j
+      y_pos = ((tier_start_y - tier_height) + tier_start_y) / 2
+      
+      # Draw a white box behind the text
+      rect(x_pos - 1, y_pos - 0.5, x_pos + 1, y_pos + 0.5, col = "white", border = NA)
+      
+      # Add the text on top of the white box
+      text(x_pos, y_pos, df$text[df$tier == tiernames[i]][j])
+      
+    }
+  } else {
+    rect(tier_start_x, tier_start_y - tier_height, X_right * 0.95, tier_start_y, col = tiercols[i])
+    text((x_left + tier_start_x)/2, ((tier_start_y - tier_height) + tier_start_y)/2, tiernames[i], col = tiercols[i] )
+       for (j in 1:Nboxes)
+    {
+      cent = (((X_right * 0.95) - tier_start_x) / (Nboxes + 1))
+      x_pos = tier_start_x + cent * j
+      y_pos = ((tier_start_y - tier_height) + tier_start_y) / 2
+      
+      # Draw a white box behind the text
+      rect(x_pos - 1, y_pos - 0.5, x_pos + 1, y_pos + 0.5, col = "white", border = NA)
+      
+      # Add the text on top of the white box
+      text(x_pos, y_pos, df$text[df$tier == tiernames[i]][j])
+      
+    }
+  }
+}
+
 ```
 
 
