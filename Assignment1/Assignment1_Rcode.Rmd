@@ -69,132 +69,64 @@ f) What are the three types of graph structures that the participants were asked
 Make a function called `tierlist` and fill in the following template.
 
 
-```{r}
-plot.new()
-x_left = 0
-X_right = 10
-y_bottom = 0
-y_top = 10
-plot.window(xlim=c(x_left,X_right), ylim=c(y_bottom, y_top))
-
-
-tiernames=c("S","A","B","C","D","F")
-
-Ntiers = length(tiernames)
-
-tiercols = c("lightblue","green", "lightgreen", "yellow", "orange", "red")
-
-tier_start_y = y_top * 0.9
-# take 10% off the top for the title
-
-tier_start_x = ((X_right-x_left) * 0.1 + x_left)
-# Starts 10% to the right to leave space for the tier label
-
-space = (tier_start_y-y_bottom)/Ntiers
-# Divide the space into equal parts of the window
-
-tier_height = (space) * 0.9
-# height of the tiers minus 10% for the gaps
-
-rect(x_left, y_bottom, X_right, y_top, col = "black")
-text((X_right+x_left)/2, y_top * 0.95, labels = "Tierlist", col = "white")
-
-title = "Ice Cream Tier List"
-tier = c("S","S","A","A","B","B","B","C","D","F")
-text = c("Dolce de Leche", "Strawberry",
-         "Vanilla", "Mint", 
-         "Chocolate", "Spumoni", "Sherbet",
-         "Rocky Road", "Butter Rum", "Raisin")
-
-df = data.frame(tier, text)
-
-tier_counts <- table(df$tier)
-
-
-for (i in 1:Ntiers)
-{
-  this_df = subset(df, tier == tiernames[i])
-  Nboxes = nrow(this_df)
-  if (i>1)
-  {
-  tier_start_y = tier_start_y - (space)
-  rect(tier_start_x, tier_start_y - tier_height, X_right * 0.95, tier_start_y, col = tiercols[i])
-  text((x_left + tier_start_x)/2, ((tier_start_y - tier_height) + tier_start_y)/2, tiernames[i], col = tiercols[i] )
-    for (j in 1:Nboxes)
-    {
-      cent = (((X_right * 0.95) - tier_start_x) / (Nboxes + 1))
-      x_pos = tier_start_x + cent * j
-      y_pos = ((tier_start_y - tier_height) + tier_start_y) / 2
-      
-      # Draw a white box behind the text
-      rect(x_pos - 1, y_pos - 0.5, x_pos + 1, y_pos + 0.5, col = "white", border = NA)
-      
-      # Add the text on top of the white box
-      text(x_pos, y_pos, df$text[df$tier == tiernames[i]][j])
-      
-    }
-  } else {
-    rect(tier_start_x, tier_start_y - tier_height, X_right * 0.95, tier_start_y, col = tiercols[i])
-    text((x_left + tier_start_x)/2, ((tier_start_y - tier_height) + tier_start_y)/2, tiernames[i], col = tiercols[i] )
-       for (j in 1:Nboxes)
-    {
-      cent = (((X_right * 0.95) - tier_start_x) / (Nboxes + 1))
-      x_pos = tier_start_x + cent * j
-      y_pos = ((tier_start_y - tier_height) + tier_start_y) / 2
-      
-      # Draw a white box behind the text
-      rect(x_pos - 1, y_pos - 0.5, x_pos + 1, y_pos + 0.5, col = "white", border = NA)
-      
-      # Add the text on top of the white box
-      text(x_pos, y_pos, df$text[df$tier == tiernames[i]][j])
-      
-    }
-  }
-}
-
-```
-
-
 ```{r, eval=FALSE}
 tierlist = function(df, tiernames=c("S","A","B","C","D","F"), 
                     tiercols = c("lightblue","green", "lightgreen", "yellow", "orange", "red"),
-                    main="My Tier List")
-{
- # background
-  rect(...)
+                    main="My Tier List") {
 
-  # Main title
-  text(...)
-       
   Ntiers = length(tiernames)
+  # Counts number of tiers to be created
 
-  # find the bar bounds
-  bar_bounds_y = ...
-  ...
+  tier_start_y = y_top * 0.9
+  # Starts tiers 10% from the top of the window
   
-  # draw the bars
-  for(k in 1:Ntiers)
-  {
-    rect(...)
-  }
+  tier_start_x = ((X_right - x_left) * 0.1 + x_left)
+  # Starts tiers 10% from the left of the window
+
+  space = (tier_start_y - y_bottom) / Ntiers
+  # Space the tiers have by the number to tiers to ensure they are equal
   
-  # draw the tier labels
- ...
- 
-  # find the box bounds and draw the boxes
-  for(k in 1:Ntiers)
-  {
-    this_df = subset(df, tier == tiernames[k])
+  tier_height = space * 0.9
+  # Tier height so that there is a gap between tiers
+  
+  rect(x_left, y_bottom, X_right, y_top, col = "black")
+  text((X_right + x_left) / 2, y_top * 0.95, labels = main, col = "white")
+  # Draws the background and created the title 
+  
+  for (i in 1:Ntiers) {
+    this_df = subset(df, tier == tiernames[i])
     Nboxes = nrow(this_df)
-    box_bounds_left = ...
+
+    if (i > 1) {
+      tier_start_y = tier_start_y - space
+      #changes the y for the second and so on tiers
+    }
+
+    rect(tier_start_x, tier_start_y - tier_height, X_right * 0.95, tier_start_y, col = tiercols[i])
+    # Draws the tier rectangle 
     
-    for(j in 1:Nboxes)
-    {
-      ...
+
+    text((x_left + tier_start_x) / 2, ((tier_start_y - tier_height) + tier_start_y) / 2, tiernames[i], col = tiercols[i])
+    # Creates the tier label centered with the tier bar
+    
+    for (j in 1:Nboxes) {
+      cent = (((X_right * 0.95) - tier_start_x) / (Nboxes + 1))
+      x_pos = tier_start_x + cent * j
+      y_pos = ((tier_start_y - tier_height) + tier_start_y) / 2
+
+      rect(x_pos - (nchar(this_df$text[j]) * 0.01) * (X_right - x_left), 
+           y_pos - ((y_top - y_bottom) * 0.05), 
+           x_pos + (nchar(this_df$text[j]) * 0.01) * (X_right - x_left), 
+           y_pos + ((y_top - y_bottom) * 0.05), 
+           col = "white", border = NA)
+      # Draws the white box behind the text
+
+      text(x_pos, y_pos, this_df$text[j])
+      # Adds the text on top of the white box
     }
   }
-  
 }
+
 ```
 
 that does the following
@@ -218,8 +150,12 @@ text = c("Dolce de Leche", "Strawberry",
 
 df = data.frame(tier, text)
 
-plot.new()
-plot.window(xlim=c(0,10), ylim=c(0,10))
+  plot.new()
+  x_left = 0
+  X_right = 10
+  y_bottom = 0
+  y_top = 10
+  plot.window(xlim = c(x_left, X_right), ylim = c(y_bottom, y_top))
 tierlist(df, tiernames=c("S","A","B","C","D","F"), 
                     tiercols = c("lightblue","green", "lightgreen", "yellow", "orange", "red"),
                     main=title)
@@ -241,12 +177,25 @@ A client wants a function to make a standard four-way Venn diagram, like one of 
 
 a) (8 marks) Make a function called `venn.oval` using the following
 
+
 ```{r, eval=FALSE}
 venn.oval = function(centerxy = c(0,0), longxy = c(2,-2), 
                  shortxy = c(1,1), col="#FFFFFF")
 {
-  # You fill this part
-}
+# We can use the mathematical function for an ellipse to use in Venn diagram 
+
+h <- centerxy[1]  # Center x
+k <- centerxy[2]  # Center y
+a <- 3  # Semi-major axis (long)
+b <- 2  # Semi-minor axis (short)
+angle <- 65 *(pi/180) # Angle of the ellipse
+
+# Generate ellipse points using mathematic function of a ellipse
+t <- seq(0, 2*pi, length.out = 100)
+x <- h + a * cos(t) * cos(angle) - b * sin(t) * sin(angle)
+y <- k + a * cos(t) * sin(angle) + b * sin(t) * cos(angle)
+polygon(x, y)
+  }
 ```
 
 This function should 
@@ -268,12 +217,34 @@ b) (4 marks) Make a four-way venn diagram function called
 
 ```{r, eval=FALSE}
 
-venn4 = function(centerx = c(1,2,3,4), 
-                 centery = c(0,1,1,0), cols = rep("#FFFFFF", 4))
-{
-  # Fill in this part
+venn4 = function(centerx = c(-1,0,2,3), 
+                 centery = c(0,1,1,0), 
+                 cols = rep("#FFFFFF", 4), 
+                 angle = c(0,0,0,0 )) {   
   
+  angle <- angle * pi / 180  # Convert degrees to radians
+
+  for (i in 1:length(centerx)) {
+    h <- centerx[i]  # Center x
+    k <- centery[i]  # Center y
+    a <- 2  # Semi-major axis (long)
+    b <- 1  # Semi-minor axis (short)
+    theta <- angle[i]  # Correct angle for this ellipse
+
+    # Generate ellipse points without rotation
+    t <- seq(0, 2*pi, length.out = 100)
+    x_ellipse <- a * cos(t)  # Standard ellipse x-coordinates
+    y_ellipse <- b * sin(t)  # Standard ellipse y-coordinates
+    
+    # Apply rotation transformation
+    x <- h + x_ellipse * cos(theta) - y_ellipse * sin(theta)
+    y <- k + x_ellipse * sin(theta) + y_ellipse * cos(theta)
+  
+    # Plot each ellipse
+    polygon(x, y, col = adjustcolor(cols[i], alpha = 0.5), border = cols[i])
+  }   
 }
+
 ```
 
 This function should 
@@ -288,7 +259,11 @@ Test your function with the following code
 ```{r, eval=FALSE}
 plot.new()
 plot.window(xlim=c(-5,5), ylim=c(-5,5))
-venn4(centerx = c(1,2,3,4), centery = c(0,1,1,0),
-      col=c(YOU FILL THIS PART)
+
+venn4(centerx = c(-1,-0.25,0.25,1), 
+      centery = c(0,1,1,0), 
+      cols = c("#00FFFF", "#FF00FF", "#FFFF00", "#000000"), 
+     angle = c(-60,-60,60,60))
+
 ```
 
