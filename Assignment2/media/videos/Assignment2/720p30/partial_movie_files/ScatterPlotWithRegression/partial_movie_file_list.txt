@@ -1,0 +1,2 @@
+# This file is used internally by FFMPEG.
+file 'file:/Users/andrew/STAT842-DataVizualization/Assignment2/media/videos/Assignment2/720p30/partial_movie_files/ScatterPlotWithRegression/uncached_00000.mp4'
