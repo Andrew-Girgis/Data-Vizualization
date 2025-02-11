@@ -161,7 +161,10 @@ Draw a ridgeline plot using the ` geom_density_ridges()` geometry in the `ggridg
 
 You may find https://wilkelab.org/ggridges/articles/introduction.html useful, especially for the fill gradient.
 
-```{r, warning=FALSE}
+```{r, warning=FALSE, message=FALSE}
+extrafont::font_import(prompt = FALSE)
+extrafont::loadfonts(device = "pdf")
+tinytex::tlmgr_install("anyfontsize")
 
 palette = viridis(4)
 
@@ -178,7 +181,7 @@ ggplot(dat_chess_q2, aes(x = remove_value, y = reorder(target_piece, remove_valu
   scale_fill_viridis_d() +
   labs(x = "Remove value", y = "Target Piece",
        title = "Ridgeline plot of piece removal values") +
-  theme_ipsum(base_family = "Roboto Condensed") +
+  theme_ipsum() +
   theme(legend.position = "none")
 
 ```
