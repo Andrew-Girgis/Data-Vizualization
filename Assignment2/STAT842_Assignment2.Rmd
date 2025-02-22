@@ -39,12 +39,15 @@ From each position, a target piece was then removed and the board setup re-evalu
 You have the full dataset in `Chess evals 1 piece removed 2024-12-23.csv`, but you will only need a few of the variables for this assignment.
 
 *Lore note: A false hydra is a Dungeons and Dragons creature that can kill without leaving a trace, similarly, we have removed a piece from the board without leaving a trace, that is, by not moving another piece into it.*
-```{r}
+```{r, message=FALSE, warning=FALSE}
 library(ggplot2)
 library(ggridges)
 library(viridis)
 library(viridisLite)
 library(hrbrthemes)
+extrafont::font_import(prompt = FALSE)
+extrafont::loadfonts(device = "pdf", quiet = TRUE)
+tinytex::tlmgr_install("anyfontsize")
 ```
 
 
@@ -97,7 +100,7 @@ Show your code and the resulting table
 
 ( You may find this presentation useful: https://themockup.blog/static/slides/intro-tables-urban.html )
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 library(hrbrthemes)
 import_roboto_condensed()
 library(dplyr)
@@ -162,11 +165,6 @@ Draw a ridgeline plot using the ` geom_density_ridges()` geometry in the `ggridg
 You may find https://wilkelab.org/ggridges/articles/introduction.html useful, especially for the fill gradient.
 
 ```{r, warning=FALSE, message=FALSE}
-extrafont::font_import(prompt = FALSE)
-extrafont::loadfonts(device = "pdf")
-tinytex::tlmgr_install("anyfontsize")
-
-palette = viridis(4)
 
 labels = c("Bishop", "Knight", "Queen", "Rook")
 
@@ -178,6 +176,7 @@ dat_chess_q2$target_piece = factor(dat_chess$target_piece, levels = c("B", "N", 
 ggplot(dat_chess_q2, aes(x = remove_value, y = reorder(target_piece, remove_value, FUN=mean), fill = target_piece)) +
   geom_density_ridges(alpha=0.5, aes(color = target_piece), scale = 0.9) +
   coord_cartesian(clip = "off") +
+  scale_color_viridis_d() +
   scale_fill_viridis_d() +
   labs(x = "Remove value", y = "Target Piece",
        title = "Ridgeline plot of piece removal values") +
@@ -204,7 +203,7 @@ Draw a ggplot of `dat_chess` using `geom_density()` and `facet_wrap()` such that
 
 For finding the mean removal of each piece, something like `by(value, piece, mean)` or a `ddply` summarize may be useful.
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 library(ggplot2)
 library(dplyr)
 library(hrbrthemes)
@@ -250,7 +249,7 @@ Draw a heatmap of the average removal value (value) of `dat_chess_q4` using `geo
 
 To add the image, see `geom_image()` in https://www.r-bloggers.com/2024/04/three-ways-to-include-images-in-your-ggplots/ 
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 library(ggimage)
 library(ggplot2)
 library(dplyr)
@@ -281,13 +280,12 @@ plot <- ggplot(dat_chess_q4, aes(x = file, y = rank, fill = value)) +
 ggbackground(plot, "starting-positon-algebraic.jpg") +
   geom_image(aes(image = "starting-positon-algebraic.jpg"), 
              x = 0.6, y = 0.6, 
-             xmin = 0, xmax = 10, ymin = 1, ymax = 8) +
-  coord_fixed(ratio = 0.8) 
+             xmin = 2, xmax = 10, ymin = 1, ymax = 8) +
+  coord_fixed(ratio = 1) 
 
 ```
 
 
-![](starting-positon-algebraic.jpg)
 
 \newpage
 

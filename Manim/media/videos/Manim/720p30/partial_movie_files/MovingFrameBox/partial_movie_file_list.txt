@@ -1,0 +1,6 @@
+# This file is used internally by FFMPEG.
+file 'file:/Users/andrew/STAT842-DataVizualization/Manim/media/videos/Manim/720p30/partial_movie_files/MovingFrameBox/2016333726_3411834554_223132457.mp4'
+file 'file:/Users/andrew/STAT842-DataVizualization/Manim/media/videos/Manim/720p30/partial_movie_files/MovingFrameBox/543634251_3000804533_2650213049.mp4'
+file 'file:/Users/andrew/STAT842-DataVizualization/Manim/media/videos/Manim/720p30/partial_movie_files/MovingFrameBox/543634251_2834709167_2567131844.mp4'
+file 'file:/Users/andrew/STAT842-DataVizualization/Manim/media/videos/Manim/720p30/partial_movie_files/MovingFrameBox/543634251_3818493169_3866284179.mp4'
+file 'file:/Users/andrew/STAT842-DataVizualization/Manim/media/videos/Manim/720p30/partial_movie_files/MovingFrameBox/543634251_2834709167_128115071.mp4'

@@ -197,21 +197,11 @@ piece into it.}
 \FunctionTok{library}\NormalTok{(ggplot2)}
 \FunctionTok{library}\NormalTok{(ggridges)}
 \FunctionTok{library}\NormalTok{(viridis)}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-## Loading required package: viridisLite
-\end{verbatim}
-
-\begin{verbatim}
-## Warning: package 'viridisLite' was built under R version 4.3.3
-\end{verbatim}
-
-\begin{Shaded}
-\begin{Highlighting}[]
 \FunctionTok{library}\NormalTok{(viridisLite)}
 \FunctionTok{library}\NormalTok{(hrbrthemes)}
+\NormalTok{extrafont}\SpecialCharTok{::}\FunctionTok{font\_import}\NormalTok{(}\AttributeTok{prompt =} \ConstantTok{FALSE}\NormalTok{)}
+\NormalTok{extrafont}\SpecialCharTok{::}\FunctionTok{loadfonts}\NormalTok{(}\AttributeTok{device =} \StringTok{"pdf"}\NormalTok{)}
+\NormalTok{tinytex}\SpecialCharTok{::}\FunctionTok{tlmgr\_install}\NormalTok{(}\StringTok{"anyfontsize"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -304,38 +294,8 @@ Show your code and the resulting table
 \FunctionTok{library}\NormalTok{(hrbrthemes)}
 \FunctionTok{import\_roboto\_condensed}\NormalTok{()}
 \FunctionTok{library}\NormalTok{(dplyr)}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-## 
-## Attaching package: 'dplyr'
-\end{verbatim}
-
-\begin{verbatim}
-## The following objects are masked from 'package:stats':
-## 
-##     filter, lag
-\end{verbatim}
-
-\begin{verbatim}
-## The following objects are masked from 'package:base':
-## 
-##     intersect, setdiff, setequal, union
-\end{verbatim}
-
-\begin{Shaded}
-\begin{Highlighting}[]
 \FunctionTok{library}\NormalTok{(gt)}
-\end{Highlighting}
-\end{Shaded}
 
-\begin{verbatim}
-## Warning: package 'gt' was built under R version 4.3.3
-\end{verbatim}
-
-\begin{Shaded}
-\begin{Highlighting}[]
 \NormalTok{q1\_idx }\OtherTok{=} \FunctionTok{seq}\NormalTok{(}\AttributeTok{from=}\DecValTok{1}\NormalTok{, }\AttributeTok{to=}\DecValTok{19001}\NormalTok{, }\AttributeTok{by=}\DecValTok{1000}\NormalTok{) }\CommentTok{\#1, 1001, 2001, 3001, ... , 19001}
 \NormalTok{dat\_chess\_q1 }\OtherTok{=}\NormalTok{ dat\_chess[q1\_idx, ]}
 
@@ -373,19 +333,6 @@ Show your code and the resulting table
 \NormalTok{  )}
 \end{Highlighting}
 \end{Shaded}
-
-\begin{verbatim}
-## Warning: Since gt v0.9.0, the `colors` argument has been deprecated.
-## * Please use the `fn` argument instead.
-## This warning is displayed once every 8 hours.
-\end{verbatim}
-
-\begin{verbatim}
-## Warning: Since gt v0.3.0, `columns = vars(...)` has been deprecated.
-## * Please use `columns = c(...)` instead.
-## Since gt v0.3.0, `columns = vars(...)` has been deprecated.
-## * Please use `columns = c(...)` instead.
-\end{verbatim}
 
 \begin{table}[!t]
 \caption*{
@@ -460,12 +407,6 @@ especially for the fill gradient.
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{extrafont}\SpecialCharTok{::}\FunctionTok{font\_import}\NormalTok{(}\AttributeTok{prompt =} \ConstantTok{FALSE}\NormalTok{)}
-\NormalTok{extrafont}\SpecialCharTok{::}\FunctionTok{loadfonts}\NormalTok{(}\AttributeTok{device =} \StringTok{"pdf"}\NormalTok{)}
-\NormalTok{tinytex}\SpecialCharTok{::}\FunctionTok{tlmgr\_install}\NormalTok{(}\StringTok{"anyfontsize"}\NormalTok{)}
-
-\NormalTok{palette }\OtherTok{=} \FunctionTok{viridis}\NormalTok{(}\DecValTok{4}\NormalTok{)}
-
 \NormalTok{labels }\OtherTok{=} \FunctionTok{c}\NormalTok{(}\StringTok{"Bishop"}\NormalTok{, }\StringTok{"Knight"}\NormalTok{, }\StringTok{"Queen"}\NormalTok{, }\StringTok{"Rook"}\NormalTok{)}
 
 \NormalTok{dat\_chess\_q2 }\OtherTok{\textless{}{-}}\NormalTok{ dat\_chess }\SpecialCharTok{\%\textgreater{}\%}
@@ -476,6 +417,7 @@ especially for the fill gradient.
 \FunctionTok{ggplot}\NormalTok{(dat\_chess\_q2, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ remove\_value, }\AttributeTok{y =} \FunctionTok{reorder}\NormalTok{(target\_piece, remove\_value, }\AttributeTok{FUN=}\NormalTok{mean), }\AttributeTok{fill =}\NormalTok{ target\_piece)) }\SpecialCharTok{+}
   \FunctionTok{geom\_density\_ridges}\NormalTok{(}\AttributeTok{alpha=}\FloatTok{0.5}\NormalTok{, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{color =}\NormalTok{ target\_piece), }\AttributeTok{scale =} \FloatTok{0.9}\NormalTok{) }\SpecialCharTok{+}
   \FunctionTok{coord\_cartesian}\NormalTok{(}\AttributeTok{clip =} \StringTok{"off"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{scale\_color\_viridis\_d}\NormalTok{() }\SpecialCharTok{+}
   \FunctionTok{scale\_fill\_viridis\_d}\NormalTok{() }\SpecialCharTok{+}
   \FunctionTok{labs}\NormalTok{(}\AttributeTok{x =} \StringTok{"Remove value"}\NormalTok{, }\AttributeTok{y =} \StringTok{"Target Piece"}\NormalTok{,}
        \AttributeTok{title =} \StringTok{"Ridgeline plot of piece removal values"}\NormalTok{) }\SpecialCharTok{+}
@@ -548,14 +490,6 @@ useful.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{verbatim}
-## Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
-## i Please use `linewidth` instead.
-## This warning is displayed once every 8 hours.
-## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
-## generated.
-\end{verbatim}
-
 \includegraphics{STAT842_Assignment2_files/figure-latex/unnamed-chunk-5-1.pdf}
 
 \newpage
@@ -591,37 +525,7 @@ To add the image, see \texttt{geom\_image()} in
 \FunctionTok{library}\NormalTok{(ggplot2)}
 \FunctionTok{library}\NormalTok{(dplyr)}
 \FunctionTok{library}\NormalTok{(plyr)}
-\end{Highlighting}
-\end{Shaded}
 
-\begin{verbatim}
-## ------------------------------------------------------------------------------
-\end{verbatim}
-
-\begin{verbatim}
-## You have loaded plyr after dplyr - this is likely to cause problems.
-## If you need functions from both plyr and dplyr, please load plyr first, then dplyr:
-## library(plyr); library(dplyr)
-\end{verbatim}
-
-\begin{verbatim}
-## ------------------------------------------------------------------------------
-\end{verbatim}
-
-\begin{verbatim}
-## 
-## Attaching package: 'plyr'
-\end{verbatim}
-
-\begin{verbatim}
-## The following objects are masked from 'package:dplyr':
-## 
-##     arrange, count, desc, failwith, id, mutate, rename, summarise,
-##     summarize
-\end{verbatim}
-
-\begin{Shaded}
-\begin{Highlighting}[]
 \NormalTok{dat\_chess\_q4 }\OtherTok{=} \FunctionTok{subset}\NormalTok{(dat\_chess, target\_piece }\SpecialCharTok{==} \StringTok{"N"}\NormalTok{)}
 
 \NormalTok{dat\_chess\_q4 }\OtherTok{=} \FunctionTok{ddply}\NormalTok{(dat\_chess\_q4, }\StringTok{"loc\_removed"}\NormalTok{, summarize,}
@@ -647,19 +551,12 @@ To add the image, see \texttt{geom\_image()} in
 \FunctionTok{ggbackground}\NormalTok{(plot, }\StringTok{"starting{-}positon{-}algebraic.jpg"}\NormalTok{) }\SpecialCharTok{+}
   \FunctionTok{geom\_image}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{image =} \StringTok{"starting{-}positon{-}algebraic.jpg"}\NormalTok{), }
              \AttributeTok{x =} \FloatTok{0.6}\NormalTok{, }\AttributeTok{y =} \FloatTok{0.6}\NormalTok{, }
-             \AttributeTok{xmin =} \DecValTok{0}\NormalTok{, }\AttributeTok{xmax =} \DecValTok{10}\NormalTok{, }\AttributeTok{ymin =} \DecValTok{1}\NormalTok{, }\AttributeTok{ymax =} \DecValTok{8}\NormalTok{) }\SpecialCharTok{+}
-  \FunctionTok{coord\_fixed}\NormalTok{(}\AttributeTok{ratio =} \FloatTok{0.8}\NormalTok{) }
+             \AttributeTok{xmin =} \DecValTok{2}\NormalTok{, }\AttributeTok{xmax =} \DecValTok{10}\NormalTok{, }\AttributeTok{ymin =} \DecValTok{1}\NormalTok{, }\AttributeTok{ymax =} \DecValTok{8}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{coord\_fixed}\NormalTok{(}\AttributeTok{ratio =} \DecValTok{1}\NormalTok{) }
 \end{Highlighting}
 \end{Shaded}
 
-\begin{verbatim}
-## Warning in geom_image(aes(image = "starting-positon-algebraic.jpg"), x = 0.6, :
-## Ignoring unknown parameters: `xmin`, `xmax`, `ymin`, and `ymax`
-\end{verbatim}
-
 \includegraphics{STAT842_Assignment2_files/figure-latex/unnamed-chunk-6-1.pdf}
-
-\includegraphics{starting-positon-algebraic.jpg}
 
 \newpage
 
