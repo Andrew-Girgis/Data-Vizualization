@@ -2,10 +2,12 @@
 \PassOptionsToPackage{unicode}{hyperref}
 \PassOptionsToPackage{hyphens}{url}
 \PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
-%
 \documentclass[
 ]{article}
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
 \usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
 \usepackage{iftex}
 \ifPDFTeX
   \usepackage[T1]{fontenc}
@@ -36,8 +38,6 @@
 }{% if KOMA class
   \KOMAoptions{parskip=half}}
 \makeatother
-\usepackage{xcolor}
-\usepackage[margin=1in]{geometry}
 \usepackage{color}
 \usepackage{fancyvrb}
 \newcommand{\VerbBar}{|}
@@ -80,21 +80,22 @@
 \newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
 \usepackage{graphicx}
 \makeatletter
-\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
-\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
-\makeatother
-% Scale images if necessary, so that they will not overflow the page
-% margins by default, and it is still possible to overwrite the defaults
-% using explicit options in \includegraphics[width, height, ...]{}
-\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
 % Set default figure placement to htbp
-\makeatletter
 \def\fps@figure{htbp}
 \makeatother
 \setlength{\emergencystretch}{3em} % prevent overfull lines
 \providecommand{\tightlist}{%
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
-\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
 \usepackage{booktabs}
 \usepackage{caption}
 \usepackage{longtable}
@@ -102,10 +103,7 @@
 \usepackage{array}
 \usepackage{anyfontsize}
 \usepackage{multirow}
-\ifLuaTeX
-  \usepackage{selnolig}  % disable illegal ligatures
-\fi
-\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\usepackage{bookmark}
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 \urlstyle{same}
 \hypersetup{
@@ -199,9 +197,12 @@ piece into it.}
 \FunctionTok{library}\NormalTok{(viridis)}
 \FunctionTok{library}\NormalTok{(viridisLite)}
 \FunctionTok{library}\NormalTok{(hrbrthemes)}
-\NormalTok{extrafont}\SpecialCharTok{::}\FunctionTok{font\_import}\NormalTok{(}\AttributeTok{prompt =} \ConstantTok{FALSE}\NormalTok{)}
-\NormalTok{extrafont}\SpecialCharTok{::}\FunctionTok{loadfonts}\NormalTok{(}\AttributeTok{device =} \StringTok{"pdf"}\NormalTok{)}
-\NormalTok{tinytex}\SpecialCharTok{::}\FunctionTok{tlmgr\_install}\NormalTok{(}\StringTok{"anyfontsize"}\NormalTok{)}
+\FunctionTok{library}\NormalTok{(sysfonts)}
+\FunctionTok{font\_add\_google}\NormalTok{(}\StringTok{"Roboto"}\NormalTok{)}
+
+\CommentTok{\#extrafont::font\_import(prompt = FALSE)}
+\NormalTok{extrafont}\SpecialCharTok{::}\FunctionTok{loadfonts}\NormalTok{(}\AttributeTok{device =} \StringTok{"pdf"}\NormalTok{, }\AttributeTok{quiet =} \ConstantTok{TRUE}\NormalTok{)}
+\CommentTok{\#tinytex::tlmgr\_install("anyfontsize")}
 \end{Highlighting}
 \end{Shaded}
 
@@ -212,7 +213,15 @@ table of six rows, and bimodal histogram.
 \begin{Shaded}
 \begin{Highlighting}[]
 \FunctionTok{library}\NormalTok{(stringr)}
+\end{Highlighting}
+\end{Shaded}
 
+\begin{verbatim}
+## Warning: package 'stringr' was built under R version 4.4.2
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
 \NormalTok{dat\_chess }\OtherTok{=} \FunctionTok{read.csv}\NormalTok{(}\StringTok{"Chess evals 1 piece removed 2024{-}12{-}23.csv"}\NormalTok{)}
 \NormalTok{dat\_chess }\OtherTok{=}\NormalTok{ dat\_chess[,}\FunctionTok{c}\NormalTok{(}\StringTok{"target\_piece"}\NormalTok{, }\StringTok{"loc\_removed"}\NormalTok{, }\StringTok{"remove\_value"}\NormalTok{)]}
 \NormalTok{dat\_chess }\OtherTok{=} \FunctionTok{subset}\NormalTok{(dat\_chess, }\SpecialCharTok{!}\FunctionTok{is.na}\NormalTok{(remove\_value))}
@@ -256,7 +265,7 @@ table of six rows, and bimodal histogram.
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{STAT842_Assignment2_files/figure-latex/unnamed-chunk-2-1.pdf}
+\pandocbounded{\includegraphics[keepaspectratio]{STAT842_Assignment2_files/figure-latex/unnamed-chunk-2-1.pdf}}
 
 \newpage
 
@@ -414,11 +423,10 @@ especially for the fill gradient.
 
 \NormalTok{dat\_chess\_q2}\SpecialCharTok{$}\NormalTok{target\_piece }\OtherTok{=} \FunctionTok{factor}\NormalTok{(dat\_chess}\SpecialCharTok{$}\NormalTok{target\_piece, }\AttributeTok{levels =} \FunctionTok{c}\NormalTok{(}\StringTok{"B"}\NormalTok{, }\StringTok{"N"}\NormalTok{, }\StringTok{"Q"}\NormalTok{, }\StringTok{"R"}\NormalTok{), }\AttributeTok{labels =}\NormalTok{ labels)}
 
-\FunctionTok{ggplot}\NormalTok{(dat\_chess\_q2, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ remove\_value, }\AttributeTok{y =} \FunctionTok{reorder}\NormalTok{(target\_piece, remove\_value, }\AttributeTok{FUN=}\NormalTok{mean), }\AttributeTok{fill =}\NormalTok{ target\_piece)) }\SpecialCharTok{+}
-  \FunctionTok{geom\_density\_ridges}\NormalTok{(}\AttributeTok{alpha=}\FloatTok{0.5}\NormalTok{, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{color =}\NormalTok{ target\_piece), }\AttributeTok{scale =} \FloatTok{0.9}\NormalTok{) }\SpecialCharTok{+}
+\FunctionTok{ggplot}\NormalTok{(dat\_chess\_q2, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ remove\_value, }\AttributeTok{y =} \FunctionTok{reorder}\NormalTok{(target\_piece, remove\_value), }\AttributeTok{fill=} \FunctionTok{stat}\NormalTok{(x))) }\SpecialCharTok{+}
   \FunctionTok{coord\_cartesian}\NormalTok{(}\AttributeTok{clip =} \StringTok{"off"}\NormalTok{) }\SpecialCharTok{+}
-  \FunctionTok{scale\_color\_viridis\_d}\NormalTok{() }\SpecialCharTok{+}
-  \FunctionTok{scale\_fill\_viridis\_d}\NormalTok{() }\SpecialCharTok{+}
+  \FunctionTok{geom\_density\_ridges\_gradient}\NormalTok{(}\AttributeTok{scale =} \DecValTok{1}\NormalTok{, }\AttributeTok{alpha=}\FloatTok{0.5}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{scale\_fill\_viridis\_c}\NormalTok{(}\AttributeTok{option =} \StringTok{"A"}\NormalTok{) }\SpecialCharTok{+}
   \FunctionTok{labs}\NormalTok{(}\AttributeTok{x =} \StringTok{"Remove value"}\NormalTok{, }\AttributeTok{y =} \StringTok{"Target Piece"}\NormalTok{,}
        \AttributeTok{title =} \StringTok{"Ridgeline plot of piece removal values"}\NormalTok{) }\SpecialCharTok{+}
   \FunctionTok{theme\_ipsum}\NormalTok{() }\SpecialCharTok{+}
@@ -426,7 +434,7 @@ especially for the fill gradient.
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{STAT842_Assignment2_files/figure-latex/unnamed-chunk-4-1.pdf}
+\pandocbounded{\includegraphics[keepaspectratio]{STAT842_Assignment2_files/figure-latex/unnamed-chunk-4-1.pdf}}
 
 \newpage
 
@@ -490,7 +498,7 @@ useful.
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{STAT842_Assignment2_files/figure-latex/unnamed-chunk-5-1.pdf}
+\pandocbounded{\includegraphics[keepaspectratio]{STAT842_Assignment2_files/figure-latex/unnamed-chunk-5-1.pdf}}
 
 \newpage
 
@@ -525,6 +533,12 @@ To add the image, see \texttt{geom\_image()} in
 \FunctionTok{library}\NormalTok{(ggplot2)}
 \FunctionTok{library}\NormalTok{(dplyr)}
 \FunctionTok{library}\NormalTok{(plyr)}
+\FunctionTok{library}\NormalTok{(ggpubr)}
+\FunctionTok{library}\NormalTok{(jpeg)}
+
+\FunctionTok{require}\NormalTok{(magick)}
+\FunctionTok{require}\NormalTok{(ggimage) }
+\FunctionTok{require}\NormalTok{(ggplot2)}
 
 \NormalTok{dat\_chess\_q4 }\OtherTok{=} \FunctionTok{subset}\NormalTok{(dat\_chess, target\_piece }\SpecialCharTok{==} \StringTok{"N"}\NormalTok{)}
 
@@ -536,8 +550,12 @@ To add the image, see \texttt{geom\_image()} in
 
 \NormalTok{dat\_chess\_q4}\SpecialCharTok{$}\NormalTok{filename }\OtherTok{=}\NormalTok{ letters[dat\_chess\_q4}\SpecialCharTok{$}\NormalTok{file]}
 
+\CommentTok{\#img=image\_read("starting{-}positon{-}algebraic.jpg")}
+
+\CommentTok{\#img\_resized \textless{}{-} image\_scale(img, "20\%")}
+
 \NormalTok{plot }\OtherTok{\textless{}{-}} \FunctionTok{ggplot}\NormalTok{(dat\_chess\_q4, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ file, }\AttributeTok{y =}\NormalTok{ rank, }\AttributeTok{fill =}\NormalTok{ value)) }\SpecialCharTok{+}
-  \FunctionTok{geom\_tile}\NormalTok{() }\SpecialCharTok{+}
+  \FunctionTok{geom\_raster}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{alpha=}\FloatTok{0.5}\NormalTok{)) }\SpecialCharTok{+}
   \FunctionTok{scale\_fill\_viridis}\NormalTok{() }\SpecialCharTok{+}
   \FunctionTok{scale\_x\_continuous}\NormalTok{(}\AttributeTok{breaks =} \DecValTok{1}\SpecialCharTok{:}\DecValTok{8}\NormalTok{, }\AttributeTok{labels =}\NormalTok{ letters[}\DecValTok{1}\SpecialCharTok{:}\DecValTok{8}\NormalTok{]) }\SpecialCharTok{+}
   \FunctionTok{scale\_y\_continuous}\NormalTok{(}\AttributeTok{breaks =} \DecValTok{1}\SpecialCharTok{:}\DecValTok{8}\NormalTok{) }\SpecialCharTok{+}
@@ -545,18 +563,15 @@ To add the image, see \texttt{geom\_image()} in
   \FunctionTok{theme}\NormalTok{(}\AttributeTok{legend.position =} \StringTok{"none"}\NormalTok{,}
         \AttributeTok{axis.title =} \FunctionTok{element\_blank}\NormalTok{(),}
         \AttributeTok{panel.grid =} \FunctionTok{element\_blank}\NormalTok{(),}
-        \AttributeTok{panel.background =} \FunctionTok{element\_rect}\NormalTok{(}\AttributeTok{fill =} \StringTok{"white"}\NormalTok{))}
+        \AttributeTok{plot.background =} \FunctionTok{element\_rect}\NormalTok{(}\AttributeTok{fill=}\ConstantTok{NA}\NormalTok{))}
 
-
-\FunctionTok{ggbackground}\NormalTok{(plot, }\StringTok{"starting{-}positon{-}algebraic.jpg"}\NormalTok{) }\SpecialCharTok{+}
-  \FunctionTok{geom\_image}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{image =} \StringTok{"starting{-}positon{-}algebraic.jpg"}\NormalTok{), }
-             \AttributeTok{x =} \FloatTok{0.6}\NormalTok{, }\AttributeTok{y =} \FloatTok{0.6}\NormalTok{, }
-             \AttributeTok{xmin =} \DecValTok{2}\NormalTok{, }\AttributeTok{xmax =} \DecValTok{10}\NormalTok{, }\AttributeTok{ymin =} \DecValTok{1}\NormalTok{, }\AttributeTok{ymax =} \DecValTok{8}\NormalTok{) }\SpecialCharTok{+}
+\NormalTok{img}\OtherTok{=}\StringTok{"starting{-}positon{-}algebraic.jpg"}
+\FunctionTok{ggbackground}\NormalTok{(plot, img, }\AttributeTok{size=}\FloatTok{0.50}\NormalTok{, }\AttributeTok{alpha=}\FloatTok{0.1}\NormalTok{) }\SpecialCharTok{+}
   \FunctionTok{coord\_fixed}\NormalTok{(}\AttributeTok{ratio =} \DecValTok{1}\NormalTok{) }
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{STAT842_Assignment2_files/figure-latex/unnamed-chunk-6-1.pdf}
+\pandocbounded{\includegraphics[keepaspectratio]{STAT842_Assignment2_files/figure-latex/unnamed-chunk-6-1.pdf}}
 
 \newpage
 
@@ -589,6 +604,6 @@ save an image.
 Hint 2: In R markdown, you can embed an image with
 \texttt{!{[}{]}(filename.png)}
 
-\includegraphics{Histogram_of_Piece_remove.png}
+\pandocbounded{\includegraphics[keepaspectratio]{Histogram_of_Piece_remove.png}}
 
 \end{document}
