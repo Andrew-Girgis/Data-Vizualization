@@ -45,9 +45,12 @@ library(ggridges)
 library(viridis)
 library(viridisLite)
 library(hrbrthemes)
-extrafont::font_import(prompt = FALSE)
+library(sysfonts)
+font_add_google("Roboto")
+
+#extrafont::font_import(prompt = FALSE)
 extrafont::loadfonts(device = "pdf", quiet = TRUE)
-tinytex::tlmgr_install("anyfontsize")
+#tinytex::tlmgr_install("anyfontsize")
 ```
 
 
@@ -173,11 +176,10 @@ dat_chess_q2 <- dat_chess %>%
 
 dat_chess_q2$target_piece = factor(dat_chess$target_piece, levels = c("B", "N", "Q", "R"), labels = labels)
 
-ggplot(dat_chess_q2, aes(x = remove_value, y = reorder(target_piece, remove_value, FUN=mean), fill = target_piece)) +
-  geom_density_ridges(alpha=0.5, aes(color = target_piece), scale = 0.9) +
+ggplot(dat_chess_q2, aes(x = remove_value, y = reorder(target_piece, remove_value), fill= stat(x))) +
   coord_cartesian(clip = "off") +
-  scale_color_viridis_d() +
-  scale_fill_viridis_d() +
+  geom_density_ridges_gradient(scale = 1, alpha=0.5) +
+  scale_fill_viridis_c(option = "A") +
   labs(x = "Remove value", y = "Target Piece",
        title = "Ridgeline plot of piece removal values") +
   theme_ipsum() +
@@ -254,6 +256,12 @@ library(ggimage)
 library(ggplot2)
 library(dplyr)
 library(plyr)
+library(ggpubr)
+library(jpeg)
+
+require(magick)
+require(ggimage) 
+require(ggplot2)
 
 dat_chess_q4 = subset(dat_chess, target_piece == "N")
 
@@ -265,8 +273,12 @@ dat_chess_q4 = ddply(dat_chess_q4, "loc_removed", summarize,
 
 dat_chess_q4$filename = letters[dat_chess_q4$file]
 
+#img=image_read("starting-positon-algebraic.jpg")
+
+#img_resized <- image_scale(img, "20%")
+
 plot <- ggplot(dat_chess_q4, aes(x = file, y = rank, fill = value)) +
-  geom_tile() +
+  geom_raster(aes(alpha=0.5)) +
   scale_fill_viridis() +
   scale_x_continuous(breaks = 1:8, labels = letters[1:8]) +
   scale_y_continuous(breaks = 1:8) +
@@ -274,13 +286,10 @@ plot <- ggplot(dat_chess_q4, aes(x = file, y = rank, fill = value)) +
   theme(legend.position = "none",
         axis.title = element_blank(),
         panel.grid = element_blank(),
-        panel.background = element_rect(fill = "white"))
+        plot.background = element_rect(fill=NA))
 
-
-ggbackground(plot, "starting-positon-algebraic.jpg") +
-  geom_image(aes(image = "starting-positon-algebraic.jpg"), 
-             x = 0.6, y = 0.6, 
-             xmin = 2, xmax = 10, ymin = 1, ymax = 8) +
+img="starting-positon-algebraic.jpg"
+ggbackground(plot, img, size=0.50, alpha=0.1) +
   coord_fixed(ratio = 1) 
 
 ```
