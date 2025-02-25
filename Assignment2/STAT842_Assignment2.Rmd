@@ -1,6 +1,6 @@
 ---
 title: "STAT 442/842, CM 762 W25 Assignment 2"
-subtitle: "DUE: Monday February 17 by 11:59pm EST"
+subtitle: "DUE: Monday February 24 by 11:59pm EST"
 output:
   pdf_document:
     keep_tex: yes
@@ -86,6 +86,8 @@ dat_chess[sample_idx, ]
 
 hist(dat_chess$remove_value)
 
+write.csv(dat_chess, "dat_chess.csv", row.names = FALSE)
+
 ```
 
 \newpage
@@ -104,18 +106,14 @@ Show your code and the resulting table
 ( You may find this presentation useful: https://themockup.blog/static/slides/intro-tables-urban.html )
 
 ```{r, message=FALSE, warning=FALSE}
-library(hrbrthemes)
-import_roboto_condensed()
 library(dplyr)
 library(gt)
 
-q1_idx = seq(from=1, to=19001, by=1000) #1, 1001, 2001, 3001, ... , 19001
+q1_idx = seq(from=1, to=19001, by=1000) # 1, 1001, 2001, ..., 19001
 dat_chess_q1 = dat_chess[q1_idx, ]
 
 dat_chess_q1 %>%
-    arrange(
-    desc(dat_chess_q1$remove_value)
-  ) %>%
+  arrange(desc(remove_value)) %>%
   gt() %>%
   tab_header(
     title = "Queens and False Hydras",
@@ -136,14 +134,13 @@ dat_chess_q1 %>%
     )
   ) %>%
   tab_style(
-    style = list(
-      cell_text(
-        font = "Roboto"
-      )
+    style = cell_text(
+      font = "Roboto"
     ),
-    locations = cells_body(
-    )
+    locations = cells_body()
   )
+
+
 
 
 ```
@@ -151,6 +148,7 @@ dat_chess_q1 %>%
 
 \newpage
 
+\newpage
 
 Q2) (12 marks) Ridgeline plot. 
 
@@ -251,46 +249,45 @@ Draw a heatmap of the average removal value (value) of `dat_chess_q4` using `geo
 
 To add the image, see `geom_image()` in https://www.r-bloggers.com/2024/04/three-ways-to-include-images-in-your-ggplots/ 
 
-```{r, message=FALSE, warning=FALSE}
-library(ggimage)
+```{r}
+# use geom_image to place the image behind the tile plot 
+
 library(ggplot2)
-library(dplyr)
+library(ggimage)
+library(viridis)
 library(plyr)
-library(ggpubr)
-library(jpeg)
 
-require(magick)
-require(ggimage) 
-require(ggplot2)
+# Filter for target piece "N" (Knight)
+dat_chess_q4 <- subset(dat_chess, target_piece == "N")
 
-dat_chess_q4 = subset(dat_chess, target_piece == "N")
+# Summarize data
+dat_chess_q4 <- ddply(dat_chess_q4, "loc_removed", summarize,
+                      file = file_removed[1],
+                      rank = rank_removed[1],
+                      value = mean(remove_value),
+                      count = length(remove_value))
 
-dat_chess_q4 = ddply(dat_chess_q4, "loc_removed", summarize,
-                     file = file_removed[1],
-                     rank = rank_removed[1],
-                     value = mean(remove_value),
-                     count = length(remove_value))
+# Convert file number to letter notation
+dat_chess_q4$filename <- letters[dat_chess_q4$file]
 
-dat_chess_q4$filename = letters[dat_chess_q4$file]
+# Define the image path
+img_path <- "starting-positon-algebraic.jpg"
 
-#img=image_read("starting-positon-algebraic.jpg")
-
-#img_resized <- image_scale(img, "20%")
-
+# Create the plot with geom_raster and overlay an image using geom_image
 plot <- ggplot(dat_chess_q4, aes(x = file, y = rank, fill = value)) +
-  geom_raster(aes(alpha=0.5)) +
-  scale_fill_viridis() +
-  scale_x_continuous(breaks = 1:8, labels = letters[1:8]) +
-  scale_y_continuous(breaks = 1:8) +
-  theme_minimal() +
+  geom_image(aes(x = 4.3, y = 4.12, image = img_path), size = 1.01, alpha = 0.1) +  # Adjust size and position as needed 
+  geom_raster(aes(alpha = 0.5)) + 
+  scale_fill_viridis() + 
+  scale_x_continuous(breaks = 1:8, labels = letters[1:8]) + 
+  scale_y_continuous(breaks = 1:8) + 
+  theme_minimal() + 
   theme(legend.position = "none",
         axis.title = element_blank(),
         panel.grid = element_blank(),
-        plot.background = element_rect(fill=NA))
-
-img="starting-positon-algebraic.jpg"
-ggbackground(plot, img, size=0.50, alpha=0.1) +
+        plot.background = element_rect(fill = NA)) +
   coord_fixed(ratio = 1) 
+# Display the plot
+print(plot)
 
 ```
 
@@ -316,6 +313,6 @@ Hint 1: In the Jupyter notebook, hold shift and right-click in order to save an 
 
 Hint 2: In R markdown, you can embed an image with `![](filename.png)`
 
-![](Histogram_of_Piece_remove.png)
+![](HistogramOfRemoveValue_ManimCE_v0.19.0.png)
 
 
