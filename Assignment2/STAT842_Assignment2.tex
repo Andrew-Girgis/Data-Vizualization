@@ -122,7 +122,7 @@
   \apptocmd{\@title}{\par {\large #1 \par}}{}{}
 }
 \makeatother
-\subtitle{DUE: Monday February 17 by 11:59pm EST}
+\subtitle{DUE: Monday February 24 by 11:59pm EST}
 \author{}
 \date{\vspace{-2.5em}}
 
@@ -267,6 +267,12 @@ table of six rows, and bimodal histogram.
 
 \pandocbounded{\includegraphics[keepaspectratio]{STAT842_Assignment2_files/figure-latex/unnamed-chunk-2-1.pdf}}
 
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{write.csv}\NormalTok{(dat\_chess, }\StringTok{"dat\_chess.csv"}\NormalTok{, }\AttributeTok{row.names =} \ConstantTok{FALSE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
 \newpage
 
 Q1) Grammar of Tables (12 marks) Make a \texttt{gt} table of the 20 rows
@@ -300,18 +306,14 @@ Show your code and the resulting table
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\FunctionTok{library}\NormalTok{(hrbrthemes)}
-\FunctionTok{import\_roboto\_condensed}\NormalTok{()}
 \FunctionTok{library}\NormalTok{(dplyr)}
 \FunctionTok{library}\NormalTok{(gt)}
 
-\NormalTok{q1\_idx }\OtherTok{=} \FunctionTok{seq}\NormalTok{(}\AttributeTok{from=}\DecValTok{1}\NormalTok{, }\AttributeTok{to=}\DecValTok{19001}\NormalTok{, }\AttributeTok{by=}\DecValTok{1000}\NormalTok{) }\CommentTok{\#1, 1001, 2001, 3001, ... , 19001}
+\NormalTok{q1\_idx }\OtherTok{=} \FunctionTok{seq}\NormalTok{(}\AttributeTok{from=}\DecValTok{1}\NormalTok{, }\AttributeTok{to=}\DecValTok{19001}\NormalTok{, }\AttributeTok{by=}\DecValTok{1000}\NormalTok{) }\CommentTok{\# 1, 1001, 2001, ..., 19001}
 \NormalTok{dat\_chess\_q1 }\OtherTok{=}\NormalTok{ dat\_chess[q1\_idx, ]}
 
 \NormalTok{dat\_chess\_q1 }\SpecialCharTok{\%\textgreater{}\%}
-    \FunctionTok{arrange}\NormalTok{(}
-    \FunctionTok{desc}\NormalTok{(dat\_chess\_q1}\SpecialCharTok{$}\NormalTok{remove\_value)}
-\NormalTok{  ) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{arrange}\NormalTok{(}\FunctionTok{desc}\NormalTok{(remove\_value)) }\SpecialCharTok{\%\textgreater{}\%}
   \FunctionTok{gt}\NormalTok{() }\SpecialCharTok{\%\textgreater{}\%}
   \FunctionTok{tab\_header}\NormalTok{(}
     \AttributeTok{title =} \StringTok{"Queens and False Hydras"}\NormalTok{,}
@@ -332,13 +334,10 @@ Show your code and the resulting table
 \NormalTok{    )}
 \NormalTok{  ) }\SpecialCharTok{\%\textgreater{}\%}
   \FunctionTok{tab\_style}\NormalTok{(}
-    \AttributeTok{style =} \FunctionTok{list}\NormalTok{(}
-      \FunctionTok{cell\_text}\NormalTok{(}
-        \AttributeTok{font =} \StringTok{"Roboto"}
-\NormalTok{      )}
+    \AttributeTok{style =} \FunctionTok{cell\_text}\NormalTok{(}
+      \AttributeTok{font =} \StringTok{"Roboto"}
 \NormalTok{    ),}
-    \AttributeTok{locations =} \FunctionTok{cells\_body}\NormalTok{(}
-\NormalTok{    )}
+    \AttributeTok{locations =} \FunctionTok{cells\_body}\NormalTok{()}
 \NormalTok{  )}
 \end{Highlighting}
 \end{Shaded}
@@ -376,6 +375,8 @@ target\_piece & loc\_removed & remove\_value & file\_removed & rank\_removed \\
 \bottomrule
 \end{tabular*}
 \end{table}
+
+\newpage
 
 \newpage
 
@@ -529,27 +530,39 @@ To add the image, see \texttt{geom\_image()} in
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\FunctionTok{library}\NormalTok{(ggimage)}
+\CommentTok{\# use geom\_image to place the image behind the tile plot }
+
 \FunctionTok{library}\NormalTok{(ggplot2)}
-\FunctionTok{library}\NormalTok{(dplyr)}
+\FunctionTok{library}\NormalTok{(ggimage)}
+\FunctionTok{library}\NormalTok{(viridis)}
 \FunctionTok{library}\NormalTok{(plyr)}
+<<<<<<< HEAD
 \FunctionTok{library}\NormalTok{(ggpubr)}
 \FunctionTok{library}\NormalTok{(jpeg)}
 
 \FunctionTok{require}\NormalTok{(magick)}
 \FunctionTok{require}\NormalTok{(ggimage) }
 \FunctionTok{require}\NormalTok{(ggplot2)}
+=======
+\end{Highlighting}
+\end{Shaded}
+>>>>>>> 484f834b10c1f62eef1d3615761109bcee1e3596
 
-\NormalTok{dat\_chess\_q4 }\OtherTok{=} \FunctionTok{subset}\NormalTok{(dat\_chess, target\_piece }\SpecialCharTok{==} \StringTok{"N"}\NormalTok{)}
+\begin{verbatim}
+## ------------------------------------------------------------------------------
+\end{verbatim}
 
-\NormalTok{dat\_chess\_q4 }\OtherTok{=} \FunctionTok{ddply}\NormalTok{(dat\_chess\_q4, }\StringTok{"loc\_removed"}\NormalTok{, summarize,}
-                     \AttributeTok{file =}\NormalTok{ file\_removed[}\DecValTok{1}\NormalTok{],}
-                     \AttributeTok{rank =}\NormalTok{ rank\_removed[}\DecValTok{1}\NormalTok{],}
-                     \AttributeTok{value =} \FunctionTok{mean}\NormalTok{(remove\_value),}
-                     \AttributeTok{count =} \FunctionTok{length}\NormalTok{(remove\_value))}
+\begin{verbatim}
+## You have loaded plyr after dplyr - this is likely to cause problems.
+## If you need functions from both plyr and dplyr, please load plyr first, then dplyr:
+## library(plyr); library(dplyr)
+\end{verbatim}
 
-\NormalTok{dat\_chess\_q4}\SpecialCharTok{$}\NormalTok{filename }\OtherTok{=}\NormalTok{ letters[dat\_chess\_q4}\SpecialCharTok{$}\NormalTok{file]}
+\begin{verbatim}
+## ------------------------------------------------------------------------------
+\end{verbatim}
 
+<<<<<<< HEAD
 \CommentTok{\#img=image\_read("starting{-}positon{-}algebraic.jpg")}
 
 \CommentTok{\#img\_resized \textless{}{-} image\_scale(img, "20\%")}
@@ -567,7 +580,53 @@ To add the image, see \texttt{geom\_image()} in
 
 \NormalTok{img}\OtherTok{=}\StringTok{"starting{-}positon{-}algebraic.jpg"}
 \FunctionTok{ggbackground}\NormalTok{(plot, img, }\AttributeTok{size=}\FloatTok{0.50}\NormalTok{, }\AttributeTok{alpha=}\FloatTok{0.1}\NormalTok{) }\SpecialCharTok{+}
+=======
+\begin{verbatim}
+## 
+## Attaching package: 'plyr'
+\end{verbatim}
+
+\begin{verbatim}
+## The following objects are masked from 'package:dplyr':
+## 
+##     arrange, count, desc, failwith, id, mutate, rename, summarise,
+##     summarize
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Filter for target piece "N" (Knight)}
+\NormalTok{dat\_chess\_q4 }\OtherTok{\textless{}{-}} \FunctionTok{subset}\NormalTok{(dat\_chess, target\_piece }\SpecialCharTok{==} \StringTok{"N"}\NormalTok{)}
+
+\CommentTok{\# Summarize data}
+\NormalTok{dat\_chess\_q4 }\OtherTok{\textless{}{-}} \FunctionTok{ddply}\NormalTok{(dat\_chess\_q4, }\StringTok{"loc\_removed"}\NormalTok{, summarize,}
+                      \AttributeTok{file =}\NormalTok{ file\_removed[}\DecValTok{1}\NormalTok{],}
+                      \AttributeTok{rank =}\NormalTok{ rank\_removed[}\DecValTok{1}\NormalTok{],}
+                      \AttributeTok{value =} \FunctionTok{mean}\NormalTok{(remove\_value),}
+                      \AttributeTok{count =} \FunctionTok{length}\NormalTok{(remove\_value))}
+
+\CommentTok{\# Convert file number to letter notation}
+\NormalTok{dat\_chess\_q4}\SpecialCharTok{$}\NormalTok{filename }\OtherTok{\textless{}{-}}\NormalTok{ letters[dat\_chess\_q4}\SpecialCharTok{$}\NormalTok{file]}
+
+\CommentTok{\# Define the image path}
+\NormalTok{img\_path }\OtherTok{\textless{}{-}} \StringTok{"starting{-}positon{-}algebraic.jpg"}
+
+\CommentTok{\# Create the plot with geom\_raster and overlay an image using geom\_image}
+\NormalTok{plot }\OtherTok{\textless{}{-}} \FunctionTok{ggplot}\NormalTok{(dat\_chess\_q4, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ file, }\AttributeTok{y =}\NormalTok{ rank, }\AttributeTok{fill =}\NormalTok{ value)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_image}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =} \FloatTok{4.3}\NormalTok{, }\AttributeTok{y =} \FloatTok{4.12}\NormalTok{, }\AttributeTok{image =}\NormalTok{ img\_path), }\AttributeTok{size =} \FloatTok{1.01}\NormalTok{, }\AttributeTok{alpha =} \FloatTok{0.1}\NormalTok{) }\SpecialCharTok{+}  \CommentTok{\# Adjust size and position as needed }
+  \FunctionTok{geom\_raster}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{alpha =} \FloatTok{0.5}\NormalTok{)) }\SpecialCharTok{+} 
+  \FunctionTok{scale\_fill\_viridis}\NormalTok{() }\SpecialCharTok{+} 
+  \FunctionTok{scale\_x\_continuous}\NormalTok{(}\AttributeTok{breaks =} \DecValTok{1}\SpecialCharTok{:}\DecValTok{8}\NormalTok{, }\AttributeTok{labels =}\NormalTok{ letters[}\DecValTok{1}\SpecialCharTok{:}\DecValTok{8}\NormalTok{]) }\SpecialCharTok{+} 
+  \FunctionTok{scale\_y\_continuous}\NormalTok{(}\AttributeTok{breaks =} \DecValTok{1}\SpecialCharTok{:}\DecValTok{8}\NormalTok{) }\SpecialCharTok{+} 
+  \FunctionTok{theme\_minimal}\NormalTok{() }\SpecialCharTok{+} 
+  \FunctionTok{theme}\NormalTok{(}\AttributeTok{legend.position =} \StringTok{"none"}\NormalTok{,}
+        \AttributeTok{axis.title =} \FunctionTok{element\_blank}\NormalTok{(),}
+        \AttributeTok{panel.grid =} \FunctionTok{element\_blank}\NormalTok{(),}
+        \AttributeTok{plot.background =} \FunctionTok{element\_rect}\NormalTok{(}\AttributeTok{fill =} \ConstantTok{NA}\NormalTok{)) }\SpecialCharTok{+}
+>>>>>>> 484f834b10c1f62eef1d3615761109bcee1e3596
   \FunctionTok{coord\_fixed}\NormalTok{(}\AttributeTok{ratio =} \DecValTok{1}\NormalTok{) }
+\CommentTok{\# Display the plot}
+\FunctionTok{print}\NormalTok{(plot)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -604,6 +663,10 @@ save an image.
 Hint 2: In R markdown, you can embed an image with
 \texttt{!{[}{]}(filename.png)}
 
+<<<<<<< HEAD
 \pandocbounded{\includegraphics[keepaspectratio]{Histogram_of_Piece_remove.png}}
+=======
+\includegraphics{HistogramOfRemoveValue_ManimCE_v0.19.0.png}
+>>>>>>> 484f834b10c1f62eef1d3615761109bcee1e3596
 
 \end{document}
