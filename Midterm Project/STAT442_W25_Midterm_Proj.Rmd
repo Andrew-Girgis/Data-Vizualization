@@ -1,0 +1,146 @@
+---
+title: "STAT 442 / STAT 847 / CM 762 Midterm Project"
+subtitle: "DUE: Friday, March 21 2025    by 11:59pm EST"
+output:
+  pdf_document: default
+  html_document: default
+urlcolor: blue
+---
+
+
+
+## NOTES
+
+
+Your midterm project must be submitted by the due date listed at the top of this document, and it must be submitted electronically in .pdf format via Crowdmark. 
+
+Organization and comprehensibility is part of a full solution. Consequently, points will be deducted for solutions that are not organized and incomprehensible. Furthermore, if you submit your assignment to Crowdmark, but you do so incorrectly in any way (e.g., you upload your Question 2 solution in the Question 1 box), you will receive a 5% deduction (i.e., 5% of the assignment’s point total will be deducted from your point total).
+
+ There are a total of 100 points possible.
+
+
+\newpage
+
+
+For this project, you have the data from a collection of brainwave reading sessions that were collected from an informed, consenting participant.
+
+These were collected by using a Muse 2 headband, and the Mind Monitor phone app. Both pictured below.
+
+![](muse-headband.jpg){width=70%}
+
+
+![](Mind_Monitor.png){width=90%}
+
+
+Several times per second. This headband collects electrical signal information and translates it into strength of different brainwaves at four locations (TP9, TP10 by the ears, and AF7, AF8 on the forehead). It also records head movements through an accelerometer and a gyroscope. 
+
+These headbands are usually used for guided meditation by playing one sound when the user's brainwaves are in a state of deep relaxation, and another sound when they are far from that state. In this case, the study participant wore the headband while relaxing for about and hour and then eventually falling asleep.
+
+The detailed dataset has the measurements processed several times per second. The variables in the detailed dataset are as follows are as follows.
+
+
+| Variable Name   | Description                                                   |
+|-----------------|---------------------------------------------------------------|
+| See:            | https://mind-monitor.com/Technical_Manual.php                 |
+| TP9             | Left Temporal-Parietal (Ear) sensor                           |
+| AF7             | Left Frontal-Prefrontal (Forehead) sensor                     |
+| AF8             | Right Frontal-Prefrontal (Forehead) sensor                    |
+| TP10            | Right Temporal-Parietal (Ear) sensor                          |
+| Delta           | 1-4 Hz brainwave activity, absolute band power                |
+| Theta           | 4-8 Hz brainwave activity, absolute band power                |
+| Alpha           | 7.5-13 Hz brainwave activity, absolute band power             |
+| Beta            | 13-30 Hz brainwave activity, absolute band power              |
+| Gamma           | 30-44 Hz brainwave activity, absolute band power              |
+| RAW             | Raw EEG sensor values in microvolts                           |
+| AUX_RIGHT       | Raw EEG sensor values in microvolts                           |
+| Accelerometer_X | head tilt up/down in g                                        |
+| Accelerometer_Y | head tilt left/right in g                                     |
+| Accelerometer_Z | vertical motion in g                                          |
+| Gyro_X          | change in rotation tilt left/right (roll)                     |
+| Gyro_Y          | change in rotation tilt up/down (pitch)                       |
+| Gyro_Z          | change in looking left/right (yaw)                            |
+| HeadBandOn      | 1 for yes, 0 for no                                           |
+| HSI             | horse shoe indicator (1 = strong connect, 2 = weak, 4 = none) |
+| Battery         | 0-100 rounded to nearest 5                                    |
+| Elements        | markers for blinks, jaw clenches, and disconnections          |
+| Sessionnum      | Unique ID for session number                                  |
+| activity        | Main activity. 'active' means various work and social things. |
+| session_time    | The total length of the session                               |
+| time_in         | Amount of time into the session of this measurement           |
+| Nblinks         | total blinks in the this session                              |
+| Njaw            | total jaw clenches in this session                            |
+| total_alpha     | Alpha_TP9 + Alpha_TP10 + Alpha_AF7 + Alpha_AF8                |
+
+See also: https://en.wikipedia.org/wiki/10%E2%80%9320_system_(EEG) for sensor location info.
+
+\newpage
+
+```{r, fig.height=10}
+
+dat = read.csv("Brainwave Data Midterm 2025.csv")
+## Smooth over time 
+
+ss_alpha = smooth.spline(dat$time_in, dat$total_alpha, spar=0.5)
+ss_beta =  smooth.spline(dat$time_in, dat$total_beta, spar=0.5)
+ss_gamma = smooth.spline(dat$time_in, dat$total_gamma, spar=0.5)
+ss_delta = smooth.spline(dat$time_in, dat$total_delta, spar=0.5)
+ss_theta = smooth.spline(dat$time_in, dat$total_theta, spar=0.5)
+
+
+plot(ss_alpha, type='l', col="Red", lwd=3, ylim=c(-1,3),
+     main="Brainwaves over time", las=1)
+lines(ss_beta, type='l', col="Blue", lwd=3)
+lines(ss_gamma, type='l', col="Black", lwd=3)
+lines(ss_delta, type='l', col="Darkgreen", lwd=3)
+lines(ss_theta, type='l', col="Darkgrey", lwd=3)
+
+legend("bottomright", legend = c("Alpha","Beta","Gamma","Delta","Theta"), lwd=3, 
+       col=c("Red","Blue","Black","Darkgreen","Darkgrey"))
+
+```
+
+
+\newpage
+
+
+For each plot, it is up to you to choose an appropriate title, subtitle, axis labels, theme, type of plot (e.g., correlation matrix plots have multiple options), and colour scheme.
+
+Show your code and the final graph.
+
+You will be graded on the following:
+
+- **Demonstrated technical ability.** Can you show that you can use ggplot and/or base R plot effectively on your own, instead of just copy/pasting plots entirely from a blog or guide?
+
+- **Use of visualization principles.** Can you make graphs such that the main point is understandable in a couple seconds or less? Are those graphs colour-blind friendly? Are they the best choice for the data and the question?
+
+
+
+
+1)  (15 marks) Plot a correlation matrix of the following variables using `ggcorrplot`. The following article will be useful. https://www.sthda.com/english/wiki/ggcorrplot-visualization-of-a-correlation-matrix-using-ggplot2
+
+
+```
+total_alpha, total_beta, total_gamma, total_delta, total_theta
+```
+
+It may help to note that brainwaves go from the highest frequency (Gamma) down through Beta, Alpha, Theta, to the lowest frequency (Delta).
+
+
+2)  (15 marks) Find a way to visually show changes in the brain activity continuously over `time_in`.  This could be a spline like in the example plot, a rolling mean like in the example plot, 
+
+
+
+3)  (15 marks) Find a way to visually compare the brain activity (specifically, the levels of the five different frequency bands) from the first hour (`time_in` between 0 and 3600) to the second and third hours, treating hours as discrete groups. You could, for example, use histograms of all five frequency bands, violin plots, or 2D density plots of two of the frequency bands separated by hour.
+
+
+
+4)  (15 marks) Make a plot that traces the movement of gyroscopic location of the head (`Gyro_X` and `Gyro_Y`) at one-minute snapshots for the first 60 minutes using arrows. That is, make a plot using `x=Gyro_X` and `y=Gyro_Y` where there are arrows pointing from the observation where `time_in = 0` to `time_in = 60` to ... to `time_in = 3600`. (Hint: `subset(dat, time_in %% 60 == 0)`)
+
+5)  (15 marks) Make a plot that shows the relationship between `RAW_TP9` and `RAW_TP10`. Make sure that the plot you select shows the data clearly despite there being more than 10,000 data points.
+
+
+6) (15 marks) Make a plot that shows how vertical the patient's head was (vertical is where `Accelerometer_Z` is near 1) over time, but colour code the data based on the rolling variance. For example, times of high variance in `Accelerometer_Z` could be red and times of low variance could be blue.
+
+
+7) (10 marks) Find an interesting pattern in the data and plot it.
+
