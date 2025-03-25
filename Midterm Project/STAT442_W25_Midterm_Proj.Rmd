@@ -7,6 +7,9 @@ output:
 urlcolor: blue
 ---
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, tidy=TRUE, tidy.opts=list(width.cutoff=60))
+```
 
 
 ## NOTES
@@ -25,11 +28,6 @@ Organization and comprehensibility is part of a full solution. Consequently, poi
 For this project, you have the data from a collection of brainwave reading sessions that were collected from an informed, consenting participant.
 
 These were collected by using a Muse 2 headband, and the Mind Monitor phone app. Both pictured below.
-
-![](muse-headband.jpg){width=70%}
-
-
-![](Mind_Monitor.png){width=90%}
 
 
 Several times per second. This headband collects electrical signal information and translates it into strength of different brainwaves at four locations (TP9, TP10 by the ears, and AF7, AF8 on the forehead). It also records head movements through an accelerometer and a gyroscope. 
@@ -75,7 +73,7 @@ See also: https://en.wikipedia.org/wiki/10%E2%80%9320_system_(EEG) for sensor lo
 
 \newpage
 
-```{r, fig.height=10}
+```{r, fig.height=4}
 
 dat = read.csv("Brainwave Data Midterm 2025.csv")
 ## Smooth over time 
@@ -113,7 +111,18 @@ You will be graded on the following:
 
 - **Use of visualization principles.** Can you make graphs such that the main point is understandable in a couple seconds or less? Are those graphs colour-blind friendly? Are they the best choice for the data and the question?
 
+```{r}
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(tidyverse)
+library(zoo)
+library(viridis)
+library(ggcorrplot)
+library(colorBlindness)
+```
 
+\newpage
 
 
 1)  (15 marks) Plot a correlation matrix of the following variables using `ggcorrplot`. The following article will be useful. https://www.sthda.com/english/wiki/ggcorrplot-visualization-of-a-correlation-matrix-using-ggplot2
@@ -125,22 +134,416 @@ total_alpha, total_beta, total_gamma, total_delta, total_theta
 
 It may help to note that brainwaves go from the highest frequency (Gamma) down through Beta, Alpha, Theta, to the lowest frequency (Delta).
 
+```{r}
+vars <- c("total_alpha", "total_beta", "total_gamma", "total_delta", "total_theta")
+cor_dat <- cor(dat[, vars])
+
+Q1_fig <- ggcorrplot(cor_dat, lab = TRUE, method = "circle", tl.col = "black", tl.cex = 0.8) +
+  labs(
+    title = "Correlation Matrix of Brainwave Strengths",
+    subtitle = "Ordered from highest frequency (Gamma) to lowest (Delta)",
+    x = "Brainwave Types",
+    y = "Brainwave Types"
+  ) +
+  scale_x_discrete(labels = vars, position = "bottom") +
+  scale_y_discrete(labels = vars) +
+  theme(
+    axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1, size = 10),
+    axis.text.y = element_text(size = 10)
+  )
+
+Q1_fig_basic <- ggcorrplot(cor_dat, lab=TRUE, method="circle", tl.col="black", tl.cex=0.8)
+
+```
+
+
+```{r, fig.height=4, fig.width=6, fig.align='center', fig.cap="Correlation matrix of the brainwave bands."}
+Q1_fig
+```
+
+
+```{r, fig.height=6, fig.width=6, fig.align='center', fig.cap="Correlation matrix of the brainwave bands.(Testing Colorblind Accessibiity)"}
+cvdPlot(Q1_fig_basic, layout = c("origin", "deuteranope", "protanope" ))
+```
+
+
+\newpage
 
 2)  (15 marks) Find a way to visually show changes in the brain activity continuously over `time_in`.  This could be a spline like in the example plot, a rolling mean like in the example plot, 
 
+```{r}
+dat$minute <- dat$time_in %/% 60
+```
 
+
+```{r}
+
+ss_alpha = smooth.spline(dat$time_in, dat$total_alpha, spar=0.5)
+ss_beta =  smooth.spline(dat$time_in, dat$total_beta, spar=0.5)
+ss_gamma = smooth.spline(dat$time_in, dat$total_gamma, spar=0.5)
+ss_delta = smooth.spline(dat$time_in, dat$total_delta, spar=0.5)
+ss_theta = smooth.spline(dat$time_in, dat$total_theta, spar=0.5)
+
+#plot all on one graph with ggplot
+Q2_fig <- ggplot(dat, aes(x=minute)) +
+  geom_line(aes(y=ss_alpha$y, col="Alpha")) +
+  geom_line(aes(y=ss_beta$y, col="Beta")) +
+  geom_line(aes(y=ss_gamma$y, col="Gamma")) +
+  geom_line(aes(y=ss_delta$y, col="Delta")) +
+  geom_line(aes(y=ss_theta$y, col="Theta")) +
+  labs(title="Brainwaves over time", subtitle="Smoothed over time", x="Minute", y="Brainwave strength") +
+  scale_color_manual(values=c("Orange","Blue","Black","Magenta","darkgreen")) +
+  theme_minimal()
+
+Q2_fig_basic <- ggplot(dat, aes(x=minute)) +
+  geom_line(aes(y=ss_alpha$y, col="Alpha")) +
+  geom_line(aes(y=ss_beta$y, col="Beta")) +
+  geom_line(aes(y=ss_gamma$y, col="Gamma")) +
+  geom_line(aes(y=ss_delta$y, col="Delta")) +
+  geom_line(aes(y=ss_theta$y, col="Theta")) +
+  labs(title="Brainwaves over time", subtitle="Smoothed over time", x="Minute", y="Brainwave strength") +
+  scale_color_manual(values=c("Orange","Blue","Black","Magenta","darkgreen")) +
+  theme_minimal() +
+  theme(legend.position = "none")
+
+```
+
+```{r, fig.height=4, fig.width=6, fig.align='center', fig.cap="Brainwave bands over time smoothed with a spline."}
+Q2_fig
+```
+
+
+```{r, fig.height=6, fig.width=6, fig.align='center', fig.cap="Brainwave bands over time smoothed with a spline.(Testing Colorblind Accessibiity)"}
+
+# Simulate color blindness
+cvdPlot(Q2_fig_basic, layout = c("origin", "deuteranope", "protanope" ))
+
+```
+
+
+```{r}
+# Create a rolling mean plot
+dat = dat[order(dat$minute),]
+dat$rolling_alpha = rollmean(dat$total_alpha, k=100, fill=NA)
+dat$rolling_beta = rollmean(dat$total_beta, k=100, fill=NA)
+dat$rolling_gamma = rollmean(dat$total_gamma, k=100, fill=NA)
+dat$rolling_delta = rollmean(dat$total_delta, k=100, fill=NA)
+dat$rolling_theta = rollmean(dat$total_theta, k=100, fill=NA)
+
+Q2_fig_b <- ggplot(dat, aes(x=minute)) +
+  geom_line(aes(y=rolling_alpha, col="Alpha")) +
+  geom_line(aes(y=rolling_beta, col="Beta")) +
+  geom_line(aes(y=rolling_gamma, col="Gamma")) +
+  geom_line(aes(y=rolling_delta, col="Delta")) +
+  geom_line(aes(y=rolling_theta, col="Theta")) +
+  labs(title="Brainwaves over time", subtitle="Rolling mean over time", x="Minute", y="Brainwave strength") +
+  scale_color_manual(values=c("Orange","Blue","Black","Magenta","darkgreen")) +
+  theme_minimal()
+```
+
+```{r, fig.height=4, fig.width=6, fig.align='center', fig.cap="Brainwave bands over time smoothed with a rolling mean."}
+Q2_fig_b
+```
+
+I used smooth spline and rolling mean to show the changes in brain activity continuously over time. The smooth spline plot shows the smoothed brainwave activity over time, while the rolling mean plot shows the rolling average of brainwave activity over time. The smooth spline plot provides a more continuous view of the data, while the rolling mean plot provides a more smoothed view of the data. Both plots show the trends in brainwave activity over time, with the smooth spline plot showing more detail and the rolling mean plot showing a more general trend. I feature engineered a new variable called "minute" to group the data by minute, which allowed me to create the rolling mean plot. I used the ggplot2 package to create the plots and customized the colors and labels to make the plots more visually accessible for colour blindness and informative. I also tested the colorblind accessibility of the plots using the colorBlindness package to ensure that the plots are accessible to individuals with colour vision deficiencies. I used minute since it is more intuitive to a reader, compare "1500 seconds in" to "25 minutes", its a lot easier to understand how much time has passed when its in minutes rather than seconds. I also used the theme_minimal() function to create a clean and simple plot that focuses on the data and trends in brainwave activity over time. I found that the smooth spline graph was more interpretable as the rolling mean plot had much overlap between minute 100 and 200 and with the nature of the lines it made it hard to decipher. The smooth spline plot was more interpretable as it was more continuous and showed the trends in brainwave activity over time more clearly. Both plots provide valuable insights into the changes in brainwave activity over time and can help identify patterns and trends in the data. 
+
+\newpage
 
 3)  (15 marks) Find a way to visually compare the brain activity (specifically, the levels of the five different frequency bands) from the first hour (`time_in` between 0 and 3600) to the second and third hours, treating hours as discrete groups. You could, for example, use histograms of all five frequency bands, violin plots, or 2D density plots of two of the frequency bands separated by hour.
 
+```{r}
+summary(dat$time_in)
+```
 
+
+```{r}
+
+# Create a new variable for hour and drop the NA values
+dat$hour = cut(dat$time_in, breaks=c(0,3600,10800), labels=c("Hour 1","Hour 2 and 3")) 
+dat_Q3 = dat %>% 
+  filter(!is.na(hour))
+
+# Compare hour one to hour 2 and 3 in a group
+Q3_fig_box <- ggplot(dat_Q3, aes(x=hour, y=total_alpha, fill=hour)) +
+  geom_boxplot() +
+  labs(title="Brainwave activity by hour", subtitle="Alpha band", x="Hour", y="Brainwave strength") +
+  theme_minimal()
+
+```
+
+```{r}
+# Create a violin plot of the beta band
+Q3_fig_violin <- ggplot(dat_Q3, aes(x=hour, y=total_beta, fill=hour)) +
+  geom_violin() +
+  labs(title="Brainwave activity by hour", subtitle="Beta band", x="Hour", y="Brainwave strength") +
+  theme_minimal()
+
+```
+
+```{r}
+# Create a 2D density plot for the delta with a legend using geom_hex()
+Q3_fig_hex <- ggplot(dat_Q3, aes(x=total_delta, y=total_theta)) +
+  geom_hex(aes(fill=hour, alpha = 0.5)) +
+  labs(title="Brainwave activity by hour", subtitle="Delta vs Theta band", x="Delta band", y="Theta band") +
+  theme_minimal()
+
+```
+
+```{r, fig.height=4, fig.width=6, fig.align='center', fig.cap="Brainwave activity by hour for the alpha band using box plot."}
+Q3_fig_box
+```
+
+```{r, fig.height=4, fig.width=6, fig.align='center', fig.cap="Brainwave activity by hour for the beta band using violin plot."}
+Q3_fig_violin
+```
+
+```{r, fig.height=4, fig.width=6, fig.align='center', fig.cap="Brainwave activity by hour for the delta and theta bands using 2D density hex plot."}
+Q3_fig_hex 
+```
+
+
+```{r, fig.height=6, fig.width=6, fig.align='center', fig.cap="Brainwave activity by hour for the alpha band using box plot.(Testing Colorblind Accessibiity)"}
+cvdPlot(Q3_fig_violin, layout = c("origin", "deuteranope", "protanope" ))
+```
+
+```{r, results='hide', message=FALSE, warning=FALSE}
+Q3_fig_alpha <- ggplot(dat_Q3, aes(x=hour, y=total_beta, fill=hour)) +
+  geom_violin() +
+  labs(title="Brainwave activity by hour", subtitle="Alpha band", x="Hour", y="Brainwave strength") +
+  theme_minimal()
+
+Q3_fig_beta <- ggplot(dat_Q3, aes(x=hour, y=total_gamma, fill=hour)) +
+  geom_violin() +
+  labs(title="Brainwave activity by hour", subtitle="Beta band", x="Hour", y="Brainwave strength") +
+  scale_fill_viridis_d(option = "viridis")
+  theme_minimal()
+
+Q3_fig_gamma <- ggplot(dat_Q3, aes(x=hour, y=total_delta, fill=hour)) +
+  geom_violin() +
+  labs(title="Brainwave activity by hour", subtitle="Gamma band", x="Hour", y="Brainwave strength") +
+  scale_fill_viridis_d(option = "cividis")
+  theme_minimal()
+
+Q3_fig_delta <- ggplot(dat_Q3, aes(x=hour, y=total_theta, fill=hour)) +
+  geom_violin() +
+  labs(title="Brainwave activity by hour", subtitle="Delta band", x="Hour", y="Brainwave strength") +
+  scale_fill_viridis_d(option = "plasma")
+  theme_minimal()
+
+Q3_fig_theta <- ggplot(dat_Q3, aes(x=hour, y=total_alpha, fill=hour)) +
+  geom_violin() +
+  labs(title="Brainwave activity by hour", subtitle="Theta band", x="Hour", y="Brainwave strength") +
+  scale_fill_viridis_d(option = "mako")
+  theme_minimal()
+```
+
+\newpage
+
+```{r, fig.height=4, fig.width=6, fig.align='center', fig.cap="Brainwave activity by hour for the alpha band using violin plot."}
+Q3_fig_alpha
+```
+
+\newpage
+
+```{r, fig.height=4, fig.width=6, fig.align='center', fig.cap="Brainwave activity by hour for the beta band using violin plot."}
+Q3_fig_beta
+```
+
+\newpage
+
+```{r, fig.height=4, fig.width=6, fig.align='center', fig.cap="Brainwave activity by hour for the gamma band using violin plot."}
+Q3_fig_gamma
+```
+
+\newpage
+
+```{r, fig.height=4, fig.width=6, fig.align='center', fig.cap="Brainwave activity by hour for the delta band using violin plot."}
+Q3_fig_delta
+```
+
+\newpage
+
+```{r, fig.height=4, fig.width=6, fig.align='center', fig.cap="Brainwave activity by hour for the theta band using violin plot."}
+Q3_fig_theta
+```
+
+
+I used boxplots, violin plots, and 2D density plots to visually compare the brain activity from the first hour to the second and third hours. The boxplot and violin plot show the distribution of brainwave activity for a single bands by hour, while the 2D density plot shows the relationship between two separate bands by hour. I found that the 2d density plot was harder to interpret as the hexagons were not as clear as the boxplot and violin plot. The density plot also doesnt to a great job of making the distribution of brainwave activity clear as the boxplot and violin plot do. Between the boxplot and violin plot I prefer the violin plot as it shows the distribution of the data more clearly and is more interpretable, however the boxplot is very effective to a reader with knowledge of the anatomy of a boxplot, along with the outliers in the boxplot being useful for analysis. Since the violin plot is more easily interpretable for the average reader, I used the violin plot to visually compare the brain activity from the first hour to the second and third hours. I used the ggplot2 package to create the plots and customized the colors and labels to make the plots more visually accessible and informative. To ensure accessability I used the cvdPlot() function from the colorBlindness package to test the colorblind accessibility of the plots. I also used the theme_minimal() function to create a clean and simple plot that focuses on the data and trends in brainwave activity by hour. These plots provide valuable insights into the differences in brainwave activity between the first hour and the second and third hours and can help identify patterns and trends in the data. I also used the scale_fill_viridis_d() function to customize the color palette of each of the violin plots and make the plots more visually appealing and intuitive for the different bands. 
+
+
+\newpage
 
 4)  (15 marks) Make a plot that traces the movement of gyroscopic location of the head (`Gyro_X` and `Gyro_Y`) at one-minute snapshots for the first 60 minutes using arrows. That is, make a plot using `x=Gyro_X` and `y=Gyro_Y` where there are arrows pointing from the observation where `time_in = 0` to `time_in = 60` to ... to `time_in = 3600`. (Hint: `subset(dat, time_in %% 60 == 0)`)
 
+```{r}
+
+# Create a subset of the data for every minute
+dat_Q4 = subset(dat, time_in %% 60 == 0)
+
+dat_Q4 = dat_Q4[order(dat_Q4$time_in),] %>%
+  filter(time_in <= 3600)
+
+# Compute arrow length (vector magnitude)
+dat_Q4$arrow_length <- sqrt(dat_Q4$Gyro_X^2 + dat_Q4$Gyro_Y^2)
+
+# Plot with arrows colored by their length using viridis scale
+Q4_fig <- ggplot(dat_Q4, aes(x=0, y=0, xend=Gyro_X, yend=Gyro_Y, color=arrow_length)) +
+  geom_segment(arrow=arrow(type="open", length=unit(0.1, "inches")), linewidth=0.5) +
+  labs(title="Head Movement Over Time", 
+       subtitle="Gyroscopic Location", 
+       x="Gyro_X", 
+       y="Gyro_Y",
+       color="Arrow Length") +
+  scale_color_viridis_c(end=0.75,  option="A") +
+  theme_minimal()
+
+
+```
+
+```{r, fig.height=4, fig.width=6, fig.align='center', fig.cap="Head movement over time using gyroscopic location with arrows."}
+Q4_fig
+```
+
+\newpage
+
+```{r, fig.height=6, fig.width=6, fig.align='center', fig.cap="Head movement over time using gyroscopic location with arrows.(Testing Colorblind Accessibiity)"}
+cvdPlot(Q4_fig, layout = c("origin", "deuteranope", "protanope" ))
+```
+
+I used arrows to trace the movement of the gyroscopic location of the head at one-minute snapshots for the first 60 minutes. I created a subset of the data for every minute using the subset() function and the modulo operator to filter the data for every minute. I then computed the arrow length as the vector magnitude of the gyroscopic location using the sqrt() function. I used the ggplot2 package to create the plot and customized the colors and labels to make the plot more visually accessible and informative. I used the scale_color_viridis_c() function to color the arrows by their length using the viridis color scale, which provides a visually appealing and intuitive way to show the arrow length. I also used the theme_minimal() function to create a clean and simple plot that focuses on the data and trends in head movement over time. I found that the arrows were effective in showing the movement of the gyroscopic location of the head over time, and the color scale provided a clear indication of the arrow length. I customized the arrows to have a open head and have a more thin line width as I noticed many arrows were grouped in the x=6 y=5 region and it was hard to distingush the arrows. I also altered the viridus hue to end before the last values since the last values were very close to white so it was hard to see the lines that were furthest from the origin. The arrows provide a visual representation of the head movement over time and can help identify patterns and trends in the data. I also used the cvdPlot() function from the colorBlindness package to test the colorblind accessibility of the plot and ensure that it is accessible to individuals with color vision deficiencies.
+
+\newpage
+
 5)  (15 marks) Make a plot that shows the relationship between `RAW_TP9` and `RAW_TP10`. Make sure that the plot you select shows the data clearly despite there being more than 10,000 data points.
 
+```{r}
+
+Q5_fig <- ggplot(dat, aes(x = RAW_TP9, y = RAW_TP10)) +
+  geom_point(alpha = 0.3, size = 0.5, color = "grey") +
+  geom_density_2d_filled(alpha = 0.7) +
+  scale_fill_viridis_d(option = "plasma") +
+  labs(
+    title = "Relationship between RAW_TP9 and RAW_TP10",
+    subtitle = "2D Density plot",
+    x = "RAW_TP9",
+    y = "RAW_TP10",
+    fill = "Density Level"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "none")
+```
+
+```{r, fig.height=4, fig.width=6, fig.align='center', fig.cap="Relationship between RAW TP9 and RAW TP10 using a 2D density plot."}
+
+Q5_fig
+```
+
+\newpage
+
+```{r, fig.height=6, fig.width=6, fig.align='center', fig.cap="Relationship between RAW TP9 and RAW TP10 using a 2D density plot.(Testing Colorblind Accessibiity)"}
+cvdPlot(Q5_fig, layout = c("origin", "deuteranope", "protanope" ))
+```
+
+This plot shows the relationship between `RAW_TP9` and `RAW_TP10` using a 2D density plot. I used the ggplot2 package to create the plot and customized the colors and labels to make the plot more visually accessible and informative. I used the geom_point() function to add transparency to the points and make the plot more visually appealing. I also used the geom_density_2d_filled() function to create a 2D density plot of the relationship between `RAW_TP9` and `RAW_TP10`. I used the scale_fill_viridis_d() function to customize the color palette of the density plot and make the plot more visually appealing and intuitive. I also used the theme_minimal() function to create a clean and simple plot that focuses on the data and trends in the relationship between `RAW_TP9` and `RAW_TP10`. The 2D density plot provides a clear indication of the relationship between `RAW_TP9` and `RAW_TP10` and can help identify patterns and trends in the data. I also used the theme() function to remove the legend from the plot and make it more visually appealing and informative. I found that the 2D density plot was effective in showing the relationship between `RAW_TP9` and `RAW_TP10` and provided a clear indication of the density levels in the data. The plot is visually appealing and intuitive, and it provides valuable insights into the relationship between `RAW_TP9` and `RAW_TP10` that can help identify patterns and trends in the data. I also used the cvdPlot() function from the colorBlindness package to test the colorblind accessibility of the plot and ensure that it is accessible to individuals with color vision deficiencies.
+
+
+\newpage
 
 6) (15 marks) Make a plot that shows how vertical the patient's head was (vertical is where `Accelerometer_Z` is near 1) over time, but colour code the data based on the rolling variance. For example, times of high variance in `Accelerometer_Z` could be red and times of low variance could be blue.
 
+```{r}
+
+# Create a rolling variance variable
+dat$rolling_var = rollapply(dat$Accelerometer_Z, width=100, FUN=var, fill=NA)
+
+# Create a plot with colour based on rolling variance
+Q6_fig <- ggplot(dat, aes(x = minute, y = Accelerometer_Z, color = rolling_var)) +
+  geom_line(linewidth = 0.8) +
+  geom_hline(yintercept = 1, linetype = "dashed", color = "grey40", linewidth = 0.7) +
+  scale_color_viridis_c(option = "plasma", direction = 1) +
+  labs(
+    title = "Vertical Head Position Over Time",
+    subtitle = "Colour-coded by Rolling Variance (High variance = more head movement)",
+    x = "Minute",
+    y = "Accelerometer_Z (Vertical position)",
+    color = "Rolling Variance"
+  ) +
+  theme_minimal() +
+  theme(
+    legend.position = "right",
+    plot.subtitle = element_text(size = 10, face = "italic")
+  )
+
+
+
+```
+
+```{r, fig.height=4, fig.width=6, fig.align='center', fig.cap="Vertical head position over time with colour coded rolling variance."}
+Q6_fig
+```
+
+\newpage
+
+```{r, fig.height=6, fig.width=6, fig.align='center', fig.cap="Vertical head position over time with colour coded rolling variance.(Testing Colorblind Accessibiity)"}
+cvdPlot(Q6_fig, layout = c("origin", "deuteranope", "protanope" ))
+```
+
+This plot shows how vertical the patient's head is over time, with the data color-coded based on the rolling variance of the accelerometer data. I used the geom_line() function to create a line plot of the vertical head position over time and the geom_hline() function to add a dashed line at y = 1 to indicate the vertical position of the head. I used the scale_color_viridis_c() function to color the data based on the rolling variance using the viridis color scale, which provides a visually appealing and intuitive way to show the rolling variance. I also used the theme_minimal() function to create a clean and simple plot that focuses on the data and trends in the vertical head position over time. The plot provides valuable insights into the relationship between the vertical head position and the rolling variance of the accelerometer data. I also used the theme() function to customize the legend position and subtitle text size to make the plot more visually appealing. I found that the color-coded plot was effective in showing the vertical head position over time and the rolling variance of the accelerometer data, and it provided a clear indication of the variance levels in the data. I also used the cvdPlot() function from the colorBlindness package to test the colorblind accessibility of the plot and ensure that it is accessible to individuals with color vision deficiencies.
+
+\newpage
 
 7) (10 marks) Find an interesting pattern in the data and plot it.
 
+
+```{r}
+
+dat_long <- dat %>%
+  pivot_longer(
+    cols = c(total_alpha, total_beta, total_gamma, total_delta, total_theta),
+    names_to = "Brainwave",
+    values_to = "Strength"
+  )
+
+# Compute mean strength per Brainwave
+brainwave_means <- dat_long %>%
+  group_by(Brainwave) %>%
+  summarize(mean_strength = mean(Strength, na.rm = TRUE)) %>%
+  mutate(label = paste0("Mean of ", Brainwave, ": ", round(mean_strength, 2)))
+
+# Base density plot
+Q7_fig <- ggplot(dat_long, aes(x = Strength, fill = Brainwave)) +
+  geom_density(alpha = 0.7) +
+  scale_fill_manual(values = c("Orange", "Blue", "Black", "Magenta", "darkgreen")) +
+  labs(
+    title = "Distribution of Brainwave Strengths",
+    subtitle = "Density plots with means annotated",
+    x = "Brainwave Strength",
+    y = "Density",
+    fill = "Brainwave Type"
+  ) +
+  theme_minimal()
+
+
+
+```
+
+\newpage
+
+```{r, fig.height=4, fig.width=6, fig.align='center', fig.cap="Distribution of brainwave strengths using overlapping density plots."}
+# Add annotations in top-right corner
+Q7_fig +
+  annotate("text",
+           x = Inf, y = Inf, 
+           label = paste(brainwave_means$label, collapse = "\n"),
+           hjust = 1.1, vjust = 1.1, 
+           size = 4, fontface = "bold",
+           color = "black")
+```
+
+\newpage
+
+```{r, fig.height=6, fig.width=6, fig.align='center', fig.cap="Distribution of brainwave strengths using overlapping density plots.(Testing Colorblind Accessibiity)"}
+cvdPlot(Q7_fig, layout = c("origin", "deuteranope", "protanope" ))
+```
+
+This multiple distrubition plot shows the distribution of brainwave strengths for the five different brainwave bands. I used the ggplot2 package to create the plot and customized the colors and labels. I used the geom_density() function to create density plots of the brainwave strengths for each band and the scale_fill_manual() function to customize the color palette of the density plots. I found that the density plots were effective in showing the distribution of brainwave strengths for each band and provided a clear indication of the density levels in the data. I also used the annotate() function to add annotations to the plot that show the mean strength of each brainwave band. The annotations provide valuable insights into the mean strength of each brainwave band and can help identify patterns and trends in the data. I also used the cvdPlot() function from the colorBlindness package to test the colorblind accessibility of the plot and ensure that it is accessible to individuals with color vision deficiencies. The plot is visually appealing and intuitive, and it provides valuable insights into the distribution of brainwave strengths for each band that can help identify patterns and trends in the data. In the plot the reader can see that the alpha brainwaves have the highest mean strength, followed by the beta, gamma, delta, and theta brainwaves. This pattern is consistent with the known frequency ranges of the different brainwave bands, with alpha brainwaves having the highest frequency range and delta brainwaves having the lowest frequency range. It is interesting to see that the gamma and theta brainwaves have similar mean strengths and that they are both lower than the delta brainwaves. This pattern could be due to the nature of the data and the activities the participant's were partaking in during the session.

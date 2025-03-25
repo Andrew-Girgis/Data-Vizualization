@@ -64,6 +64,8 @@ canvas_watercolors(colors = pal_magic, layers = 1, background = "grey75", resolu
 
 \vspace{5cm}
 
+\newpage
+
 **Q3) (4 marks)** Using `pal_magic`, the `mandelbrot` package, `geom_raster`, `theme_void`, and `scale_fill_gradientn`, construct an image on a mandelbrot set. The image should be 600 pixels wide, 400 pixels tall, and include a non-trival portion of the set (that is, not all divergent and not all convergent). The x and y limits need to be 0.001 across or less.
 
 
@@ -102,7 +104,7 @@ The y limits should be 10% above and below the maximum and minimum stock prices 
 If the closing price in Jan 1, 2025 is higher than in Jan 1, 2024 make the area under the line forestgreen at 50% opacity, otherwise make the firebrick at 50% opacity.
 
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 library(tidyquant)
 library(ggplot2)
 library(dplyr)
@@ -147,7 +149,7 @@ See https://briatte.github.io/ggnetwork/articles/ggnetwork.html for more guidanc
 Draw a network with edges, nodes, and nodetext of `flo` arranged in a `circle` layout. Label the nodes with the names of the families, in `firebrick` color and a bold font face. Use `theme_blank()`.
 
 
-```{r}
+```{r, message=FALSE, warning=FALSE, results='hide'}
 library(ggnetwork)
 library(network)
 library(sna)
@@ -170,9 +172,9 @@ set.edge.attribute(flo, "day", sample(1:3, edge, replace = TRUE))
 
 # Create the network
 ggnetwork(flo, layout = "circle")
+```
 
-head(ggnetwork(flo))
-
+```{r, message=FALSE, warning=FALSE}
 ggplot(ggnetwork(flo,  layout = "circle"), aes(x=x, y=y, xend = xend, yend = yend)) +
   geom_edges(aes(linetype = type), color = "grey50") +
   geom_nodes(color = "black", size = 8) +
@@ -185,6 +187,7 @@ ggplot(ggnetwork(flo,  layout = "circle"), aes(x=x, y=y, xend = xend, yend = yen
 
 \vspace{5cm}
 
+\newpage
 
 **Q6) (1 mark)** Repeat Q5 with the same specifications, but use the `fruchtermanreingold` layout.
 
@@ -200,9 +203,12 @@ ggplot(ggnetwork(flo,  layout = "fruchtermanreingold"), aes(x=x, y=y, xend = xen
 
 \vspace{5cm}
 
+\newpage
+
 **Q7) (2 marks)** Comment briefly (about 30 words) on the relative readability of the network structure between the two layouts of Q5 and Q6, and how this relates to the crossing number.
 
-The circle layout is more readable than the fruchtermanreingold layout because it has fewer edge crossings. The crossing number is the number of pairs of edges that cross each other. The circle layout has a crossing number of 0, while the fruchtermanreingold layout has a crossing number of 3.
+The Fruchterman-Reingold layout is more readable than the circle layout because it minimizes edge crossings, making connections clearer. It also places highly connected nodes centrally and less connected ones on the perimeter, improving visibility and structure, whereas the circle layout lacks this organization.
+
 
 
 \newpage
@@ -212,7 +218,7 @@ The circle layout is more readable than the fruchtermanreingold layout because i
 
 **Q8) (4 marks)** Use the `hoopR` package and the following code to get the play by play data from the Toronto Raptors home game that happened Monday, Feb 24, 2025.
 
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 library(hoopR)
 dat_pbp = load_nba_pbp(seasons = 2025)
 df_pbp = data.frame(dat_pbp)
@@ -250,7 +256,7 @@ ggplot(df_1game_shots, aes(x = coordinate_x, y = coordinate_y)) +
 
 \vspace{5cm}
 
-
+\newpage
 
 **Q9) (4 marks)** Using `geom_basketball(league = "nba")` in the `sportyR` package, draw a full basketball court and draw points for shot attempts from `df_1game_shots` on top of the court with `coordinate_x` and `coordinate_y`. Also, map shape to `score_type` and draw the points in Red. Put the legend for the shape aesthetic on the bottom of the plot, and make the legend title be "Points".
 
